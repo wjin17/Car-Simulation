@@ -17,7 +17,7 @@ body {
 #carCanvas {
   background: #14532d;
   width: 100%;
-  height: calc(100% - 2rem);
+  height: calc(50% - 2rem);
 }
 
 #networkCanvas {
