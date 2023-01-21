@@ -1,0 +1,64 @@
+html {
+  height: 100vh;
+  width: 100vw;
+  min-width: 414px;
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+#carCanvas {
+  background: #14532d;
+  width: 100%;
+  height: calc(100% - 2rem);
+}
+
+#networkCanvas {
+  background: black;
+  width: 100%;
+  height: calc(50% - 2rem);
+}
+
+#buttons {
+  display: flex;
+  flex-direction: row;
+}
+
+button {
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem;
+  margin: 1rem;
+  cursor: pointer;
+}
+
+button:hover {
+  background: blue;
+}
+
+@media (min-width: 1024px) {
+  body {
+    flex-direction: row;
+  }
+
+  #buttons {
+    flex-direction: column;
+  }
+
+  #carCanvas {
+    width: calc(50% - 2rem);
+    height: 100%;
+  }
+
+  #networkCanvas {
+    width: calc(50% - 2rem);
+    height: 100%;
+  }
+}
