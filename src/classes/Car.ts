@@ -6,15 +6,17 @@ export class Car {
   x: number;
   y: number;
   width = 40;
-  height = 80;
+  height = 70;
   polygon: Point[] = [];
 
-  controls: Controls;
+  controls?: Controls;
   maxSpeed: number;
   speed = 0;
   acceleration = 0.2;
   break = 0.05;
   angle = 0;
+
+  isFocus = false;
 
   constructor(
     plane: CoordPlane,
@@ -29,7 +31,7 @@ export class Car {
 
     this.polygon = this.generateCar();
 
-    this.controls = new Controls(CONTROLS.MANUAL);
+    //this.controls = new Controls(CONTROLS.MANUAL);
   }
 
   generateCar() {
@@ -37,33 +39,38 @@ export class Car {
     const rad = Math.hypot(this.width, this.height / 2);
     const alpha = Math.atan2(this.width, this.height);
     points.push({
-      x: Math.sin(this.angle - alpha) * rad,
-      y: Math.cos(this.angle - alpha) * rad,
+      x: this.x + Math.sin(this.angle - alpha) * rad,
+      y: this.y + Math.cos(this.angle - alpha) * rad,
     });
     points.push({
-      x: Math.sin(this.angle + alpha) * rad,
-      y: Math.cos(this.angle + alpha) * rad,
+      x: this.x + Math.sin(this.angle + alpha) * rad,
+      y: this.y + Math.cos(this.angle + alpha) * rad,
     });
     points.push({
-      x: Math.sin(Math.PI + this.angle - alpha) * rad,
-      y: Math.cos(Math.PI + this.angle - alpha) * rad,
+      x: this.x + Math.sin(Math.PI + this.angle - alpha) * rad,
+      y: this.y + Math.cos(Math.PI + this.angle - alpha) * rad,
     });
     points.push({
-      x: Math.sin(Math.PI + this.angle + alpha) * rad,
-      y: Math.cos(Math.PI + this.angle + alpha) * rad,
+      x: this.x + Math.sin(Math.PI + this.angle + alpha) * rad,
+      y: this.y + Math.cos(Math.PI + this.angle + alpha) * rad,
     });
     return points;
   }
 
   move() {
-    const { forward, reverse, left, right } = this.controls;
-    if (forward) this.speed += this.acceleration;
-    if (reverse) this.speed -= this.acceleration;
+    if (this.controls) {
+      const { forward, reverse, left, right } = this.controls;
+      if (forward) this.speed += this.acceleration;
+      if (reverse) this.speed -= this.acceleration;
 
-    if (this.speed != 0) {
-      const flip = this.speed > 0 ? -1 : 1;
-      if (left) this.angle += 0.03 * flip;
-      if (right) this.angle -= 0.03 * flip;
+      if (this.speed > this.maxSpeed) this.speed = this.maxSpeed;
+      if (this.speed < -this.maxSpeed) this.speed = -this.maxSpeed;
+
+      if (this.speed != 0) {
+        const flip = this.speed > 0 ? -1 : 1;
+        if (left) this.angle += 0.03 * flip;
+        if (right) this.angle -= 0.03 * flip;
+      }
     }
 
     if (this.speed > 0) this.speed -= this.break;
@@ -74,6 +81,7 @@ export class Car {
   }
 
   update() {
+    //console.log("focus", carId, this.isFocus);
     this.move();
     this.polygon = this.generateCar();
   }
@@ -82,7 +90,7 @@ export class Car {
     context.fillStyle = color;
     context.beginPath();
     this.polygon.forEach((point, index) => {
-      const { x, y } = this.plane.transformCoord(point);
+      const { x, y } = this.plane.translatePoint(point);
       if (index == 0) context.moveTo(x, y);
       else context.lineTo(x, y);
     });
