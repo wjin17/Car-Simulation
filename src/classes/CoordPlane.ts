@@ -2,7 +2,7 @@
  * Class representing the coordinate plane for a canvas
  */
 
-import { rotateClockwise, shift } from "../utils/transform";
+import { reflectOverX, rotateClockwise, shift } from "../utils/transform";
 import { Car } from "./Car";
 
 export class CoordPlane {
@@ -33,7 +33,7 @@ export class CoordPlane {
     // return rotateClockwise(shiftedPoint, this.rotation);
 
     // rotate then shift
-    const rotatedPoint = rotateClockwise(point, this.rotation);
+    const rotatedPoint = reflectOverX(point);
     return shift(
       rotatedPoint,
       this.shiftX - this.center.x,

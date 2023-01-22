@@ -35,11 +35,9 @@ export class StraightRoad {
       shift(this.center, shiftRoad, shiftRoad),
     ];
 
-    const bruh = [left, right].map((border) =>
+    return [left, right].map((border) =>
       border.map((point) => rotateClockwise(point, this.rotation))
     );
-    console.log(bruh);
-    return bruh;
   }
 
   draw(context: CanvasRenderingContext2D) {

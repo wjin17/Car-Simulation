@@ -1,6 +1,12 @@
 export function rotateClockwise(point: Point, rotation: number) {
-  const x = point.x * Math.cos(rotation) - point.y * Math.sin(rotation);
-  const y = point.x * Math.sin(rotation) + point.y * Math.cos(rotation);
+  const x = point.x * Math.cos(-rotation) - point.y * Math.sin(-rotation);
+  const y = point.x * Math.sin(-rotation) + point.y * Math.cos(-rotation);
+  return { x, y };
+}
+
+export function reflectOverX(point: Point) {
+  const x = point.x;
+  const y = -point.y;
   return { x, y };
 }
 

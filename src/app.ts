@@ -13,7 +13,7 @@ carContext.canvas.width = carCanvas.offsetWidth;
 carContext.canvas.height = carCanvas.offsetHeight;
 
 const plane = new CoordPlane(
-  -Math.PI / 2,
+  Math.PI / 2,
   carCanvas.offsetWidth / 2,
   carCanvas.offsetHeight / 2
 );
@@ -25,10 +25,9 @@ const controls = new Controls(CONTROLS.MANUAL);
 
 car1.controls = controls;
 
-const straightRoad1 = new StraightRoad(plane, 100, 100, 300, 0);
+const straightRoad1 = new StraightRoad(plane, 0, 0, 300, -Math.PI / 2);
 
 //console.log(rotateClockwise({ x: 0, y: 0 }, -Math.PI / 2));
-console.log("", plane.mapToCanvas({ x: 0, y: 0 }));
 
 document.getElementById("reset")!.onclick = () => {
   console.log("reset!");
@@ -58,19 +57,24 @@ window.onresize = () => {
 // }
 
 function animate() {
-  // carContext.canvas.width = carCanvas.offsetWidth;
-  // carContext.canvas.height = carCanvas.offsetHeight;
+  carContext.canvas.width = carCanvas.offsetWidth;
+  carContext.canvas.height = carCanvas.offsetHeight;
 
-  // car1.update();
-  // plane.updateCenter(car1);
+  car1.update();
+  plane.updateCenter(car1);
   // //car2.update();
   // //if (car1.isFocus) plane.updateCenter(car1);
   // //if (car2.isFocus) plane.updateCenter(car2);
 
-  // straightRoad1.draw(carContext);
+  straightRoad1.draw(carContext);
 
-  // car1.draw(carContext, "red");
+  car1.draw(carContext, "red");
   //car2.draw(carContext, "blue");
+
+  // const origin = { x: 100, y: 0 };
+  // const { x, y } = plane.mapToCanvas(origin);
+  // carContext.arc(x, y, 50, 0, 2 * Math.PI);
+  // carContext.stroke();
 
   document.getElementById("reset")!.onclick = () => {
     //swapCars();
@@ -82,7 +86,7 @@ function animate() {
   // carContext.arc(test.x, test.y, 100, Math.PI * 2, 0);
   // carContext.stroke();
   // convert coordinate plane
-  //requestAnimationFrame(animate);
+  requestAnimationFrame(animate);
 }
 
 animate();
