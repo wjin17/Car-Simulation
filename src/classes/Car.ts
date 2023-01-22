@@ -16,8 +16,6 @@ export class Car {
   break = 0.05;
   angle = 0;
 
-  isFocus = false;
-
   constructor(
     plane: CoordPlane,
     startX: number,
@@ -33,6 +31,8 @@ export class Car {
 
     //this.controls = new Controls(CONTROLS.MANUAL);
   }
+
+  // distance could be dist += Math.abs(this.speed)
 
   generateCar() {
     const points = [];
@@ -81,7 +81,6 @@ export class Car {
   }
 
   update() {
-    //console.log("focus", carId, this.isFocus);
     this.move();
     this.polygon = this.generateCar();
   }

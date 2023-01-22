@@ -21,7 +21,6 @@ const car2 = new Car(plane, 100, 0, 5);
 
 const controls = new Controls(CONTROLS.MANUAL);
 
-car1.isFocus = true;
 car1.controls = controls;
 
 document.getElementById("reset")!.onclick = () => {
@@ -42,15 +41,11 @@ window.onresize = () => {
 };
 
 function swapCars() {
-  if (car1.isFocus) {
-    car1.isFocus = false;
+  if (car1.controls) {
     car1.controls = undefined;
-    car2.isFocus = true;
     car2.controls = controls;
   } else {
-    car2.isFocus = false;
     car2.controls = undefined;
-    car1.isFocus = true;
     car1.controls = controls;
   }
 }
@@ -61,14 +56,13 @@ function animate() {
 
   car1.update();
   car2.update();
-  if (car1.isFocus) plane.updateCenter(car1);
-  if (car2.isFocus) plane.updateCenter(car2);
+  //if (car1.isFocus) plane.updateCenter(car1);
+  //if (car2.isFocus) plane.updateCenter(car2);
 
   car1.draw(carContext, "red");
   car2.draw(carContext, "blue");
 
   document.getElementById("reset")!.onclick = () => {
-    console.log(car1.speed);
     swapCars();
   };
 
