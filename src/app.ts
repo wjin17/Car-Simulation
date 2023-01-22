@@ -2,6 +2,8 @@ import "../css/style.css";
 import { Car } from "./classes/Car";
 import { CONTROLS, Controls } from "./classes/Controls";
 import { CoordPlane } from "./classes/CoordPlane";
+import { StraightRoad } from "./classes/Road/StraightRoad";
+import { rotateClockwise } from "./utils/transform";
 
 console.log("begin");
 
@@ -17,11 +19,16 @@ const plane = new CoordPlane(
 );
 
 const car1 = new Car(plane, 0, 0, 5);
-const car2 = new Car(plane, 100, 0, 5);
+//const car2 = new Car(plane, 100, 0, 5);
 
 const controls = new Controls(CONTROLS.MANUAL);
 
 car1.controls = controls;
+
+const straightRoad1 = new StraightRoad(plane, 100, 100, 300, 0);
+
+//console.log(rotateClockwise({ x: 0, y: 0 }, -Math.PI / 2));
+console.log("", plane.mapToCanvas({ x: 0, y: 0 }));
 
 document.getElementById("reset")!.onclick = () => {
   console.log("reset!");
@@ -40,39 +47,42 @@ window.onresize = () => {
   plane.shiftY = carCanvas.offsetHeight / 2;
 };
 
-function swapCars() {
-  if (car1.controls) {
-    car1.controls = undefined;
-    car2.controls = controls;
-  } else {
-    car2.controls = undefined;
-    car1.controls = controls;
-  }
-}
+// function swapCars() {
+//   if (car1.controls) {
+//     car1.controls = undefined;
+//     car2.controls = controls;
+//   } else {
+//     car2.controls = undefined;
+//     car1.controls = controls;
+//   }
+// }
 
 function animate() {
-  carContext.canvas.width = carCanvas.offsetWidth;
-  carContext.canvas.height = carCanvas.offsetHeight;
+  // carContext.canvas.width = carCanvas.offsetWidth;
+  // carContext.canvas.height = carCanvas.offsetHeight;
 
-  car1.update();
-  car2.update();
-  //if (car1.isFocus) plane.updateCenter(car1);
-  //if (car2.isFocus) plane.updateCenter(car2);
+  // car1.update();
+  // plane.updateCenter(car1);
+  // //car2.update();
+  // //if (car1.isFocus) plane.updateCenter(car1);
+  // //if (car2.isFocus) plane.updateCenter(car2);
 
-  car1.draw(carContext, "red");
-  car2.draw(carContext, "blue");
+  // straightRoad1.draw(carContext);
+
+  // car1.draw(carContext, "red");
+  //car2.draw(carContext, "blue");
 
   document.getElementById("reset")!.onclick = () => {
-    swapCars();
+    //swapCars();
   };
 
-  const test = plane.translatePoint({ x: 0, y: 0 });
+  // const test = plane.translatePoint({ x: 0, y: 0 });
 
-  carContext.beginPath();
-  carContext.arc(test.x, test.y, 100, Math.PI * 2, 0);
-  carContext.stroke();
+  // carContext.beginPath();
+  // carContext.arc(test.x, test.y, 100, Math.PI * 2, 0);
+  // carContext.stroke();
   // convert coordinate plane
-  requestAnimationFrame(animate);
+  //requestAnimationFrame(animate);
 }
 
 animate();

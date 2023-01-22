@@ -2,19 +2,19 @@
  * Class representing the coordinate plane for a canvas
  */
 
+import { rotateClockwise, shift } from "../utils/transform";
 import { Car } from "./Car";
 
 export class CoordPlane {
   rotation: number;
   shiftX: number;
   shiftY: number;
-  center: Point;
+  center = { x: 0, y: 0 };
 
   constructor(rotation: number, x: number, y: number) {
     this.rotation = rotation;
     this.shiftX = x;
     this.shiftY = y;
-    this.center = { x, y };
   }
 
   updateCenter(car: Car) {
@@ -23,14 +23,21 @@ export class CoordPlane {
     this.center = { x, y };
   }
 
-  translatePoint(point: Point) {
-    const x =
-      point.x * Math.cos(this.rotation) - point.x * Math.sin(this.rotation);
-    const y =
-      point.y * Math.sin(this.rotation) + point.y * Math.cos(this.rotation);
-    return {
-      x: x + this.shiftX - this.center.x,
-      y: y + this.shiftY + this.center.y,
-    };
+  mapToCanvas(point: Point) {
+    // shift then rotate
+    // const shiftedPoint = shift(
+    //   point,
+    //   this.shiftX + this.center.x,
+    //   this.shiftY + this.center.y
+    // );
+    // return rotateClockwise(shiftedPoint, this.rotation);
+
+    // rotate then shift
+    const rotatedPoint = rotateClockwise(point, this.rotation);
+    return shift(
+      rotatedPoint,
+      this.shiftX - this.center.x,
+      this.shiftY + this.center.y
+    );
   }
 }

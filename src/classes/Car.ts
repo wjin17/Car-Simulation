@@ -28,6 +28,7 @@ export class Car {
     this.maxSpeed = maxSpeed;
 
     this.polygon = this.generateCar();
+    console.log(this.polygon);
 
     //this.controls = new Controls(CONTROLS.MANUAL);
   }
@@ -54,6 +55,7 @@ export class Car {
       x: this.x + Math.sin(Math.PI + this.angle + alpha) * rad,
       y: this.y + Math.cos(Math.PI + this.angle + alpha) * rad,
     });
+    //console.log(points);
     return points;
   }
 
@@ -67,7 +69,7 @@ export class Car {
       if (this.speed < -this.maxSpeed) this.speed = -this.maxSpeed;
 
       if (this.speed != 0) {
-        const flip = this.speed > 0 ? -1 : 1;
+        const flip = this.speed > 0 ? 1 : -1;
         if (left) this.angle += 0.03 * flip;
         if (right) this.angle -= 0.03 * flip;
       }
@@ -89,7 +91,7 @@ export class Car {
     context.fillStyle = color;
     context.beginPath();
     this.polygon.forEach((point, index) => {
-      const { x, y } = this.plane.translatePoint(point);
+      const { x, y } = this.plane.mapToCanvas(point);
       if (index == 0) context.moveTo(x, y);
       else context.lineTo(x, y);
     });
