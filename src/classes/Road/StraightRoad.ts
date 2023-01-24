@@ -28,6 +28,33 @@ export class StraightRoad implements Road {
     this.borders = this.generateRoad();
   }
 
+  get offset() {
+    const angle = this.rotation / Math.PI;
+    let xOffset = 0;
+    let yOffset = 0;
+
+    if (angle % 1 == 0) {
+      if (angle % 2 == 0) {
+        yOffset = this.width;
+      } else {
+        yOffset = -this.width;
+      }
+    } else {
+      if ((angle - 0.5) % 2 == 0) {
+        xOffset = -this.width;
+      } else {
+        xOffset = this.width;
+      }
+    }
+
+    const shiftedCenter = shift(this.center, xOffset, yOffset);
+    const rotatedCenter = rotateClockwise(shiftedCenter, this.rotation);
+    return {
+      ...rotatedCenter,
+      rotation: this.rotation,
+    };
+  }
+
   private generateRoad() {
     const shiftRoad = this.width / 2;
     const left = [
