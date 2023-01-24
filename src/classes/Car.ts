@@ -1,3 +1,4 @@
+import { Road } from "../@types/road";
 import { CONTROLS, Controls } from "./Controls";
 import { CoordPlane } from "./CoordPlane";
 
@@ -15,6 +16,9 @@ export class Car {
   acceleration = 0.2;
   break = 0.05;
   angle = 0;
+  collision = false;
+
+  distance = 0;
 
   constructor(
     plane: CoordPlane,
@@ -28,7 +32,6 @@ export class Car {
     this.maxSpeed = maxSpeed;
 
     this.polygon = this.generateCar();
-    console.log(this.polygon);
 
     //this.controls = new Controls(CONTROLS.MANUAL);
   }
@@ -55,7 +58,6 @@ export class Car {
       x: this.x + Math.sin(Math.PI + this.angle + alpha) * rad,
       y: this.y + Math.cos(Math.PI + this.angle + alpha) * rad,
     });
-    //console.log(points);
     return points;
   }
 
@@ -82,13 +84,20 @@ export class Car {
     this.y += Math.cos(this.angle) * this.speed;
   }
 
-  update() {
-    this.move();
-    this.polygon = this.generateCar();
+  update(roads: Road[]) {
+    for (const road of roads) {
+      if (road.detectCollision(this)) this.collision = true;
+    }
+    if (!this.collision) {
+      this.move();
+      this.distance += Math.abs(this.speed);
+      this.polygon = this.generateCar();
+    }
   }
 
   draw(context: CanvasRenderingContext2D, color: string) {
-    context.fillStyle = color;
+    if (this.collision) context.fillStyle = "grey";
+    else context.fillStyle = color;
     context.beginPath();
     this.polygon.forEach((point, index) => {
       const { x, y } = this.plane.mapToCanvas(point);

@@ -3,7 +3,7 @@ import { Car } from "./classes/Car";
 import { CONTROLS, Controls } from "./classes/Controls";
 import { CoordPlane } from "./classes/CoordPlane";
 import { StraightRoad } from "./classes/Road/StraightRoad";
-import { rotateClockwise } from "./utils/transform";
+import { rotateClockwise } from "./utils/transformations";
 
 console.log("begin");
 
@@ -25,7 +25,8 @@ const controls = new Controls(CONTROLS.MANUAL);
 
 car1.controls = controls;
 
-const straightRoad1 = new StraightRoad(plane, 0, 0, 300, -Math.PI / 2);
+const straightRoad1 = new StraightRoad(plane, -150, 0, 300, -Math.PI / 2);
+const roads = [straightRoad1];
 
 //console.log(rotateClockwise({ x: 0, y: 0 }, -Math.PI / 2));
 
@@ -59,8 +60,13 @@ window.onresize = () => {
 function animate() {
   carContext.canvas.width = carCanvas.offsetWidth;
   carContext.canvas.height = carCanvas.offsetHeight;
+  // find what road the car is in
+  // for road in current roads
+  //   road.detectCollision(car)
 
-  car1.update();
+  const currentRoads = roads.filter((road) => road.containsCar(car1));
+
+  car1.update(currentRoads);
   plane.updateCenter(car1);
   // //car2.update();
   // //if (car1.isFocus) plane.updateCenter(car1);
@@ -77,7 +83,10 @@ function animate() {
   // carContext.stroke();
 
   document.getElementById("reset")!.onclick = () => {
+    //console.log(straightRoad1.containsCar(car1));
     //swapCars();
+    console.log("car polygon", car1.distance);
+    //console.log(straightRoad1.borders.flat());
   };
 
   // const test = plane.translatePoint({ x: 0, y: 0 });
