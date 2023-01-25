@@ -19,6 +19,7 @@ describe("Roads", () => {
       expect(road180.containsCar(carInBounds)).toBeTruthy();
       expect(road270.containsCar(carInBounds)).toBeTruthy();
     });
+
     it("should not detect car out of bounds", () => {
       const carOutOfBounds = new Car(plane, 600, 600, 5);
 
@@ -27,6 +28,7 @@ describe("Roads", () => {
       expect(road180.containsCar(carOutOfBounds)).toBeFalsy();
       expect(road270.containsCar(carOutOfBounds)).toBeFalsy();
     });
+
     it("should detect collision", () => {
       const damagedCar = new Car(plane, -130, -105, 5);
 
@@ -35,6 +37,7 @@ describe("Roads", () => {
       expect(road180.detectCollision(damagedCar)).toBeTruthy();
       expect(road270.detectCollision(damagedCar)).toBeTruthy();
     });
+
     it("should not detect collision", () => {
       const safeCar = new Car(plane, 0, 0, 5);
       expect(road0.detectCollision(safeCar)).toBeFalsy();
@@ -42,7 +45,8 @@ describe("Roads", () => {
       expect(road180.detectCollision(safeCar)).toBeFalsy();
       expect(road270.detectCollision(safeCar)).toBeFalsy();
     });
-    it.only("should set the offset correctly", () => {
+
+    it("should set the offset correctly", () => {
       const { x: x0, y: y0 } = road0.offset;
       const { x: x90, y: y90 } = road90.offset;
       const { x: x180, y: y180 } = road180.offset;

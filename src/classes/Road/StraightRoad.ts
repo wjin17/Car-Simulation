@@ -69,8 +69,6 @@ export class StraightRoad implements Road {
       shift(this.start, shiftRoad, shiftRoad),
     ];
 
-    console.log(left);
-
     return [left, right].map((border) =>
       border.map((point) =>
         rotateClockwiseAround(this.start, point, this.rotation)
