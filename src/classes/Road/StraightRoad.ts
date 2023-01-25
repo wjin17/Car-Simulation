@@ -1,13 +1,17 @@
 import { Road } from "../../@types/road";
 import { polygonsIntersect } from "../../utils/intersections";
 import { maxReduction, minReduction } from "../../utils/reductions";
-import { rotateClockwise, shift } from "../../utils/transformations";
+import {
+  rotateClockwise,
+  rotateClockwiseAround,
+  shift,
+} from "../../utils/transformations";
 import { Car } from "../Car";
 import { CoordPlane } from "../CoordPlane";
 
 export class StraightRoad implements Road {
   plane: CoordPlane;
-  center: Point;
+  start: Point;
   width: number;
   rotation: number;
 
@@ -21,7 +25,7 @@ export class StraightRoad implements Road {
     rotation: number
   ) {
     this.plane = plane;
-    this.center = { x, y };
+    this.start = { x, y };
     this.width = width;
     this.rotation = rotation;
 
@@ -41,16 +45,15 @@ export class StraightRoad implements Road {
       }
     } else {
       if ((angle - 0.5) % 2 == 0) {
-        xOffset = -this.width;
-      } else {
         xOffset = this.width;
+      } else {
+        xOffset = -this.width;
       }
     }
 
-    const shiftedCenter = shift(this.center, xOffset, yOffset);
-    const rotatedCenter = rotateClockwise(shiftedCenter, this.rotation);
+    const shiftedCenter = shift(this.start, xOffset, yOffset);
     return {
-      ...rotatedCenter,
+      ...shiftedCenter,
       rotation: this.rotation,
     };
   }
@@ -58,16 +61,20 @@ export class StraightRoad implements Road {
   private generateRoad() {
     const shiftRoad = this.width / 2;
     const left = [
-      shift(this.center, -shiftRoad, 0),
-      shift(this.center, -shiftRoad, this.width),
+      shift(this.start, -shiftRoad, -shiftRoad),
+      shift(this.start, -shiftRoad, shiftRoad),
     ];
     const right = [
-      shift(this.center, shiftRoad, 0),
-      shift(this.center, shiftRoad, this.width),
+      shift(this.start, shiftRoad, -shiftRoad),
+      shift(this.start, shiftRoad, shiftRoad),
     ];
 
+    console.log(left);
+
     return [left, right].map((border) =>
-      border.map((point) => rotateClockwise(point, this.rotation))
+      border.map((point) =>
+        rotateClockwiseAround(this.start, point, this.rotation)
+      )
     );
   }
 

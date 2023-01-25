@@ -4,6 +4,19 @@ export function rotateClockwise(point: Point, rotation: number) {
   return { x, y };
 }
 
+export function rotateClockwiseAround(
+  origin: Point,
+  point: Point,
+  rotation: number
+) {
+  const shiftedPoint = shift(point, -origin.x, -origin.y);
+  const x =
+    shiftedPoint.x * Math.cos(-rotation) - shiftedPoint.y * Math.sin(-rotation);
+  const y =
+    shiftedPoint.x * Math.sin(-rotation) + shiftedPoint.y * Math.cos(-rotation);
+  return shift({ x, y }, origin.x, origin.y);
+}
+
 export function reflectOverX(point: Point) {
   const x = point.x;
   const y = -point.y;
