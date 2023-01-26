@@ -8,3 +8,12 @@ export interface Road {
 
   draw(context: CanvasRenderingContext2D): void;
 }
+
+export type StraightBorder = Point[][];
+
+export type TurnBorder = {
+  origin: Point;
+  radius: number;
+  start: number;
+  end: number;
+};

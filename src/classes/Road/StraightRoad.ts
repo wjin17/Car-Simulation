@@ -1,11 +1,7 @@
-import { Road } from "../../@types/road";
+import { Road, StraightBorder } from "../../@types/road";
 import { polygonsIntersect } from "../../utils/intersections";
 import { maxReduction, minReduction } from "../../utils/reductions";
-import {
-  rotateClockwise,
-  rotateClockwiseAround,
-  shift,
-} from "../../utils/transformations";
+import { rotateClockwiseAround, shift } from "../../utils/transformations";
 import { Car } from "../Car";
 import { CoordPlane } from "../CoordPlane";
 
@@ -15,7 +11,7 @@ export class StraightRoad implements Road {
   width: number;
   rotation: number;
 
-  borders: Point[][];
+  borders: StraightBorder;
 
   constructor(
     plane: CoordPlane,
@@ -29,7 +25,7 @@ export class StraightRoad implements Road {
     this.width = width;
     this.rotation = rotation;
 
-    this.borders = this.generateRoad();
+    this.borders = this.generateBorders();
   }
 
   get offset() {
@@ -58,7 +54,7 @@ export class StraightRoad implements Road {
     };
   }
 
-  private generateRoad() {
+  private generateBorders() {
     const shiftRoad = this.width / 2;
     const left = [
       shift(this.start, -shiftRoad, -shiftRoad),
