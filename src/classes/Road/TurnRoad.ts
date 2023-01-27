@@ -1,5 +1,9 @@
 import { Road, TurnBorder } from "../../@types/road";
 import { distance } from "../../utils/distance";
+import {
+  findCircleLineIntersections,
+  pointOnSegment,
+} from "../../utils/intersections";
 import { makePositiveRad, shift } from "../../utils/transformations";
 import { Car } from "../Car";
 import { CoordPlane } from "../CoordPlane";
@@ -111,21 +115,75 @@ export class TurnRoad implements Road {
 
     let angle = Math.atan2(-dy, dx);
     if (angle < 0) angle += 2 * Math.PI;
-    const keep2PICW = this.rotation == Math.PI / 2 && this.isCW;
-    const keep2PICCW = this.rotation == 0 && !this.isCW;
-    const startAngle = makePositiveRad(
-      this.rotationStart,
-      keep2PICW || keep2PICCW
-    );
-    const endAngle = makePositiveRad(this.rotationEnd, keep2PICW || keep2PICCW);
+    const keep2PI = this.isCW
+      ? this.rotation == Math.PI / 2
+      : this.rotation == 0;
+    const startAngle = makePositiveRad(this.rotationStart, keep2PI);
+    const endAngle = makePositiveRad(this.rotationEnd, keep2PI);
     if (this.isCW) return angle >= startAngle && angle <= endAngle;
     else return angle <= startAngle && angle >= endAngle;
   }
 
   detectCollision(car: Car) {
-    // find possible intersection for both sides of point
+    for (let i = 0; i < car.polygon.length; i++) {
+      const line = [car.polygon[i], car.polygon[(i + 1) % car.polygon.length]];
+      const innerIntersections = findCircleLineIntersections(
+        this.origin,
+        this.width * 2,
+        line
+      );
+      const outerIntersections = findCircleLineIntersections(
+        this.origin,
+        this.width,
+        line
+      );
+
+      const totalIntersections = [...innerIntersections, ...outerIntersections];
+
+      const doesIntersect = totalIntersections.some((point) =>
+        pointOnSegment(point, line)
+      );
+
+      if (doesIntersect) return true;
+    }
     return false;
   }
+
+  test(car: Car, canvas: CanvasRenderingContext2D) {
+    for (let i = 0; i < car.polygon.length; i++) {
+      const line = [car.polygon[i], car.polygon[(i + 1) % car.polygon.length]];
+      const innerIntersections = findCircleLineIntersections(
+        this.origin,
+        this.width * 2,
+        line
+      );
+      const outerIntersections = findCircleLineIntersections(
+        this.origin,
+        this.width,
+        line
+      );
+      const totalIntersections = [...innerIntersections, ...outerIntersections];
+      totalIntersections.forEach((intersection) => {
+        const { x, y } = this.plane.mapToCanvas(intersection);
+        if (pointOnSegment(intersection, line)) canvas.strokeStyle = "black";
+        else canvas.strokeStyle = "white";
+        canvas.beginPath();
+        canvas.arc(x, y, 10, 0, 2 * Math.PI);
+        canvas.stroke();
+      });
+
+      //   const outerIntersections = findCircleLineIntersections(
+      //     this.origin,
+      //     this.width * 2,
+      //     line
+      //   );
+      //   totalIntersections.push(...innerIntersections, ...outerIntersections);
+      //   console.log(
+      //     totalIntersections.some((point) => pointOnSegment(point, line))
+      //   );
+    }
+  }
+
   draw(context: CanvasRenderingContext2D) {
     context.lineWidth = 5;
     context.strokeStyle = "white";

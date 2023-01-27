@@ -36,10 +36,10 @@ const straightRoad1 = new StraightRoad(plane, 0, 0, 100, 0);
 //(3 * Math.PI) / 2
 const turnRoad1 = new TurnRoad(
   plane,
-  0, //straightRoad1.offset.x,
-  0, //straightRoad1.offset.y,
+  straightRoad1.offset.x,
+  straightRoad1.offset.y,
   100,
-  (3 * Math.PI) / 2, //straightRoad1.offset.rotation,
+  straightRoad1.offset.rotation,
   "CW"
 );
 
@@ -75,11 +75,11 @@ const straightRoad5 = new StraightRoad(
 //   "CCW"
 // );
 const roads = [
-  //straightRoad1,
+  straightRoad1,
   //straightRoad2,
   turnRoad1,
-  //straightRoad3,
-  //straightRoad4,
+  straightRoad3,
+  straightRoad4,
   //straightRoad5,
 ]; //straightRoad2
 
@@ -138,20 +138,28 @@ function animate() {
   // const { x, y } = plane.mapToCanvas(origin);
   // carContext.arc(x, y, 50, 0, 2 * Math.PI);
   // carContext.stroke();
+  turnRoad1.test(car1, carContext);
 
   document.getElementById("reset")!.onclick = () => {
     //console.log("road1 offset", straightRoad1.offset);
-    console.log(
-      "road3 offset",
-      car1.polygon.map((corner) => turnRoad1.validPoint(corner))
-    );
+    // console.log(
+    //   "road3 offset",
+    //   car1.polygon.map((corner) => turnRoad1.validPoint(corner))
+    // );
+    //console.log(currentRoads);
+    turnRoad1.test(car1, carContext);
+
+    console.log("commence drawing");
+    // carContext.beginPath();
+    // carContext.strokeStyle = "black";
+    // carContext.arc(400, 200, 100, 0, 2 * Math.PI);
+    carContext.stroke();
+    //(Cy - Ay)  * (Bx - Ax) = (By - Ay) * (Cx - Ax).
+    // A = 1,1 B = 3,3 C = 2,2
     // console.log(Math.atan2(1, 0)); // pi/2
     // console.log(Math.atan2(0, 1)); // 0
     // console.log(Math.atan2(-1, 0)); // -pi/2 + 2pi => 3pi/2
     // console.log(Math.atan2(0, -1)); // pi
-
-    carContext.arc(300, 125, 50, -Math.PI, -Math.PI / 8);
-    carContext.stroke();
     //console.log("turn road origin", turnRoad1.origin);
     //console.log(straightRoad1.containsCar(car1));
     //swapCars();
