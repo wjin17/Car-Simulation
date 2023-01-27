@@ -28,3 +28,9 @@ export function shift(point: Point, shiftX: number, shiftY: number) {
   const y = point.y + shiftY;
   return { x, y };
 }
+
+export function makePositiveRad(rad: number, keep2PI?: boolean) {
+  const positiveRad = (rad + 2 * Math.PI) % (2 * Math.PI);
+  if (positiveRad == 0 && keep2PI) return 2 * Math.PI;
+  else return positiveRad;
+}

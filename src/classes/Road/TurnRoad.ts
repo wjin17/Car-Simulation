@@ -1,5 +1,6 @@
 import { Road, TurnBorder } from "../../@types/road";
-import { shift } from "../../utils/transformations";
+import { distance } from "../../utils/distance";
+import { makePositiveRad, shift } from "../../utils/transformations";
 import { Car } from "../Car";
 import { CoordPlane } from "../CoordPlane";
 
@@ -9,8 +10,11 @@ export class TurnRoad implements Road {
   width: number;
   rotation: number;
 
-  borders: TurnBorder[];
   isCW: boolean;
+  origin: Point;
+  radii: number[];
+  rotationStart: number;
+  rotationEnd: number;
 
   constructor(
     plane: CoordPlane,
@@ -26,7 +30,11 @@ export class TurnRoad implements Road {
     this.rotation = rotation;
     this.isCW = direction == "CW";
 
-    this.borders = this.generateBorders();
+    this.origin = this.calculateOrigin();
+    this.radii = [width, width * 2];
+
+    this.rotationStart = this.isCW ? this.rotation - Math.PI : this.rotation;
+    this.rotationEnd = this.rotation - Math.PI / 2;
   }
 
   get offset() {
@@ -59,7 +67,7 @@ export class TurnRoad implements Road {
     };
   }
 
-  generateBorders() {
+  calculateOrigin() {
     const angle = this.rotation / Math.PI;
 
     const flip = this.isCW ? 1 : -1;
@@ -86,30 +94,34 @@ export class TurnRoad implements Road {
       }
     }
 
-    const origin = shift(this.start, shiftX, shiftY);
-
-    const rotationStart = this.isCW ? this.rotation - Math.PI : this.rotation;
-    const rotationEnd = this.rotation - Math.PI / 2;
-
-    return [
-      {
-        origin: origin,
-        radius: this.width,
-        start: rotationStart,
-        end: rotationEnd,
-      },
-      {
-        origin: origin,
-        radius: this.width * 2,
-        start: rotationStart,
-        end: rotationEnd,
-      },
-    ];
+    return shift(this.start, shiftX, shiftY);
   }
 
   containsCar(car: Car) {
-    return false;
+    return car.polygon.some((corner) => this.validPoint(corner));
   }
+
+  validPoint(point: Point) {
+    const position = distance(point, this.origin);
+    const validDistance = position >= this.width && position <= this.width * 2;
+    if (!validDistance) return false;
+
+    const dx = point.x - this.origin.x;
+    const dy = point.y - this.origin.y;
+
+    let angle = Math.atan2(-dy, dx);
+    if (angle < 0) angle += 2 * Math.PI;
+    const keep2PICW = this.rotation == Math.PI / 2 && this.isCW;
+    const keep2PICCW = this.rotation == 0 && !this.isCW;
+    const startAngle = makePositiveRad(
+      this.rotationStart,
+      keep2PICW || keep2PICCW
+    );
+    const endAngle = makePositiveRad(this.rotationEnd, keep2PICW || keep2PICCW);
+    if (this.isCW) return angle >= startAngle && angle <= endAngle;
+    else return angle <= startAngle && angle >= endAngle;
+  }
+
   detectCollision(car: Car) {
     // find possible intersection for both sides of point
     return false;
@@ -118,10 +130,17 @@ export class TurnRoad implements Road {
     context.lineWidth = 5;
     context.strokeStyle = "white";
 
-    for (const border of this.borders) {
-      const { x, y } = this.plane.mapToCanvas(border.origin);
+    for (const radius of this.radii) {
+      const { x, y } = this.plane.mapToCanvas(this.origin);
       context.beginPath();
-      context.arc(x, y, border.radius, border.start, border.end, !this.isCW);
+      context.arc(
+        x,
+        y,
+        radius,
+        this.rotationStart,
+        this.rotationEnd,
+        !this.isCW
+      );
       context.stroke();
     }
   }

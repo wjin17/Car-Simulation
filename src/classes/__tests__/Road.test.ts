@@ -68,60 +68,115 @@ describe("Roads", () => {
   });
 
   describe("Turn road", () => {
-    const cwRoad0 = new TurnRoad(plane, 0, 0, 300, 0, "CW");
-    const cwRoad90 = new TurnRoad(plane, 0, 0, 300, Math.PI / 2, "CW");
-    const cwRoad180 = new TurnRoad(plane, 0, 0, 300, Math.PI, "CW");
-    const cwRoad270 = new TurnRoad(plane, 0, 0, 300, (Math.PI * 3) / 2, "CW");
+    describe("Clockwise", () => {
+      const cwRoad0 = new TurnRoad(plane, 0, 0, 300, 0, "CW");
+      const cwRoad90 = new TurnRoad(plane, 0, 0, 300, Math.PI / 2, "CW");
+      const cwRoad180 = new TurnRoad(plane, 0, 0, 300, Math.PI, "CW");
+      const cwRoad270 = new TurnRoad(plane, 0, 0, 300, (Math.PI * 3) / 2, "CW");
 
-    const ccwRoad0 = new TurnRoad(plane, 0, 0, 300, 0, "CCW");
-    const ccwRoad90 = new TurnRoad(plane, 0, 0, 300, Math.PI / 2, "CCW");
-    const ccwRoad180 = new TurnRoad(plane, 0, 0, 300, Math.PI, "CCW");
-    const ccwRoad270 = new TurnRoad(plane, 0, 0, 300, (Math.PI * 3) / 2, "CCW");
+      it("should set the offset correctly", () => {
+        const { x: cwX0, y: cwY0, rotation: cwRot0 } = cwRoad0.offset;
+        const { x: cwX90, y: cwY90, rotation: cwRot90 } = cwRoad90.offset;
+        const { x: cwX180, y: cwY180, rotation: cwRot180 } = cwRoad180.offset;
+        const { x: cwX270, y: cwY270, rotation: cwRot270 } = cwRoad270.offset;
 
-    it("should set the offset correctly for clockwise turn", () => {
-      const { x: cwX0, y: cwY0, rotation: cwRot0 } = cwRoad0.offset;
-      const { x: cwX90, y: cwY90, rotation: cwRot90 } = cwRoad90.offset;
-      const { x: cwX180, y: cwY180, rotation: cwRot180 } = cwRoad180.offset;
-      const { x: cwX270, y: cwY270, rotation: cwRot270 } = cwRoad270.offset;
+        expect(cwX0).toBeCloseTo(600);
+        expect(cwY0).toBeCloseTo(300);
+        expect(cwRot0).toBeCloseTo(Math.PI / 2);
 
-      expect(cwX0).toBeCloseTo(600);
-      expect(cwY0).toBeCloseTo(300);
-      expect(cwRot0).toBeCloseTo(Math.PI / 2);
+        expect(cwX90).toBeCloseTo(300);
+        expect(cwY90).toBeCloseTo(-600);
+        expect(cwRot90).toBeCloseTo(Math.PI);
 
-      expect(cwX90).toBeCloseTo(300);
-      expect(cwY90).toBeCloseTo(-600);
-      expect(cwRot90).toBeCloseTo(Math.PI);
+        expect(cwX180).toBeCloseTo(-600);
+        expect(cwY180).toBeCloseTo(-300);
+        expect(cwRot180).toBeCloseTo((3 * Math.PI) / 2);
 
-      expect(cwX180).toBeCloseTo(-600);
-      expect(cwY180).toBeCloseTo(-300);
-      expect(cwRot180).toBeCloseTo((3 * Math.PI) / 2);
+        expect(cwX270).toBeCloseTo(-300);
+        expect(cwY270).toBeCloseTo(600);
+        expect(cwRot270).toBeCloseTo(0);
+      });
 
-      expect(cwX270).toBeCloseTo(-300);
-      expect(cwY270).toBeCloseTo(600);
-      expect(cwRot270).toBeCloseTo(0);
+      it("should detect car in bounds", () => {
+        const carInBounds = new Car(plane, 0, 0, 5);
+
+        expect(cwRoad0.containsCar(carInBounds)).toBeTruthy();
+        expect(cwRoad90.containsCar(carInBounds)).toBeTruthy();
+        expect(cwRoad180.containsCar(carInBounds)).toBeTruthy();
+        expect(cwRoad270.containsCar(carInBounds)).toBeTruthy();
+      });
+
+      it("should not detect car out of bounds", () => {
+        const carOutOfBounds = new Car(plane, 600, 600, 5);
+
+        expect(cwRoad0.containsCar(carOutOfBounds)).toBeFalsy();
+        expect(cwRoad90.containsCar(carOutOfBounds)).toBeFalsy();
+        expect(cwRoad180.containsCar(carOutOfBounds)).toBeFalsy();
+        expect(cwRoad270.containsCar(carOutOfBounds)).toBeFalsy();
+      });
     });
 
-    it("should set the offset correctly for counter clockwise turn", () => {
-      const { x: ccwX0, y: ccwY0, rotation: ccwRot0 } = ccwRoad0.offset;
-      const { x: ccwX90, y: ccwY90, rotation: ccwRot90 } = ccwRoad90.offset;
-      const { x: ccwX180, y: ccwY180, rotation: ccwRot180 } = ccwRoad180.offset;
-      const { x: ccwX270, y: ccwY270, rotation: ccwRot270 } = ccwRoad270.offset;
+    describe("Counter clockwise", () => {
+      const ccwRoad0 = new TurnRoad(plane, 0, 0, 300, 0, "CCW");
+      const ccwRoad90 = new TurnRoad(plane, 0, 0, 300, Math.PI / 2, "CCW");
+      const ccwRoad180 = new TurnRoad(plane, 0, 0, 300, Math.PI, "CCW");
+      const ccwRoad270 = new TurnRoad(
+        plane,
+        0,
+        0,
+        300,
+        (Math.PI * 3) / 2,
+        "CCW"
+      );
 
-      expect(ccwX0).toBeCloseTo(-600);
-      expect(ccwY0).toBeCloseTo(300);
-      expect(ccwRot0).toBeCloseTo(-Math.PI / 2);
+      it("should set the offset correctly", () => {
+        const { x: ccwX0, y: ccwY0, rotation: ccwRot0 } = ccwRoad0.offset;
+        const { x: ccwX90, y: ccwY90, rotation: ccwRot90 } = ccwRoad90.offset;
+        const {
+          x: ccwX180,
+          y: ccwY180,
+          rotation: ccwRot180,
+        } = ccwRoad180.offset;
+        const {
+          x: ccwX270,
+          y: ccwY270,
+          rotation: ccwRot270,
+        } = ccwRoad270.offset;
 
-      expect(ccwX90).toBeCloseTo(300);
-      expect(ccwY90).toBeCloseTo(600);
-      expect(ccwRot90).toBeCloseTo(0);
+        expect(ccwX0).toBeCloseTo(-600);
+        expect(ccwY0).toBeCloseTo(300);
+        expect(ccwRot0).toBeCloseTo(-Math.PI / 2);
 
-      expect(ccwX180).toBeCloseTo(600);
-      expect(ccwY180).toBeCloseTo(-300);
-      expect(ccwRot180).toBeCloseTo(Math.PI / 2);
+        expect(ccwX90).toBeCloseTo(300);
+        expect(ccwY90).toBeCloseTo(600);
+        expect(ccwRot90).toBeCloseTo(0);
 
-      expect(ccwX270).toBeCloseTo(-300);
-      expect(ccwY270).toBeCloseTo(-600);
-      expect(ccwRot270).toBeCloseTo(Math.PI);
+        expect(ccwX180).toBeCloseTo(600);
+        expect(ccwY180).toBeCloseTo(-300);
+        expect(ccwRot180).toBeCloseTo(Math.PI / 2);
+
+        expect(ccwX270).toBeCloseTo(-300);
+        expect(ccwY270).toBeCloseTo(-600);
+        expect(ccwRot270).toBeCloseTo(Math.PI);
+      });
+
+      it("should detect car in bounds", () => {
+        const carInBounds = new Car(plane, 0, 0, 5);
+
+        expect(ccwRoad0.containsCar(carInBounds)).toBeTruthy();
+        expect(ccwRoad90.containsCar(carInBounds)).toBeTruthy();
+        expect(ccwRoad180.containsCar(carInBounds)).toBeTruthy();
+        expect(ccwRoad270.containsCar(carInBounds)).toBeTruthy();
+      });
+
+      it("should not detect car out of bounds", () => {
+        const carOutOfBounds = new Car(plane, 600, 600, 5);
+
+        expect(ccwRoad0.containsCar(carOutOfBounds)).toBeFalsy();
+        expect(ccwRoad90.containsCar(carOutOfBounds)).toBeFalsy();
+        expect(ccwRoad180.containsCar(carOutOfBounds)).toBeFalsy();
+        expect(ccwRoad270.containsCar(carOutOfBounds)).toBeFalsy();
+      });
     });
   });
 });

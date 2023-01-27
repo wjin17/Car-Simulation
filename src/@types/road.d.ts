@@ -12,7 +12,6 @@ export interface Road {
 export type StraightBorder = Point[][];
 
 export type TurnBorder = {
-  origin: Point;
   radius: number;
   start: number;
   end: number;
