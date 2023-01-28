@@ -2,7 +2,7 @@
   "name": "self-driving",
   "version": "1.0.0",
   "description": "Self driving car in JS",
-  "main": "src/index.js",
+  "main": "src/app.ts",
   "scripts": {
     "test": "jest",
     "build": "webpack",
