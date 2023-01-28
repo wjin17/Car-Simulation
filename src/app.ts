@@ -25,7 +25,7 @@ const controls = new Controls(CONTROLS.MANUAL);
 
 car1.controls = controls;
 
-const straightRoad1 = new StraightRoad(plane, 0, 0, 100, 0);
+const straightRoad1 = new StraightRoad(plane, 0, 0, 100, 3, 0);
 // const straightRoad2 = new StraightRoad(
 //   plane,
 //   straightRoad1.offset.x,
@@ -39,6 +39,7 @@ const turnRoad1 = new TurnRoad(
   straightRoad1.offset.x,
   straightRoad1.offset.y,
   100,
+  3,
   straightRoad1.offset.rotation,
   "CW"
 );
@@ -48,6 +49,7 @@ const straightRoad3 = new StraightRoad(
   turnRoad1.offset.x,
   turnRoad1.offset.y,
   100,
+  3,
   turnRoad1.offset.rotation
 );
 
@@ -56,6 +58,7 @@ const straightRoad4 = new StraightRoad(
   straightRoad3.offset.x,
   straightRoad3.offset.y,
   100,
+  3,
   straightRoad3.offset.rotation
 );
 
@@ -64,6 +67,7 @@ const straightRoad5 = new StraightRoad(
   straightRoad4.offset.x,
   straightRoad4.offset.y,
   100,
+  3,
   straightRoad4.offset.rotation
 );
 // const turnRoad2 = new TurnRoad(

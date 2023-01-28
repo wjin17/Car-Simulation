@@ -1,5 +1,6 @@
 import { Road, StraightBorder } from "../../@types/road";
 import { polygonsIntersect } from "../../utils/intersections";
+import { lerp } from "../../utils/lerp";
 import { maxReduction, minReduction } from "../../utils/reductions";
 import { rotateClockwiseAround, shift } from "../../utils/transformations";
 import { Car } from "../Car";
@@ -9,22 +10,27 @@ export class StraightRoad implements Road {
   plane: CoordPlane;
   start: Point;
   width: number;
+  laneCount: number;
   rotation: number;
 
-  borders: StraightBorder;
+  lanes: Point[][];
+  borders: Point[][];
 
   constructor(
     plane: CoordPlane,
     x: number,
     y: number,
     width: number,
+    laneCount: number,
     rotation: number
   ) {
     this.plane = plane;
     this.start = { x, y };
     this.width = width;
+    this.laneCount = laneCount;
     this.rotation = rotation;
 
+    this.lanes = this.generateLanes();
     this.borders = this.generateBorders();
   }
 
@@ -72,6 +78,29 @@ export class StraightRoad implements Road {
     );
   }
 
+  private generateLanes() {
+    const shiftRoad = this.width / 2;
+    const { x, y } = this.start;
+    const left = x - shiftRoad;
+    const right = x + shiftRoad;
+    const top = y + shiftRoad;
+    const bottom = y - shiftRoad;
+    const lanes: Point[][] = [];
+
+    for (let i = 1; i < this.laneCount; i++) {
+      const laneX = lerp(left, right, i / this.laneCount);
+      const laneBottom = { x: laneX, y: bottom };
+      const laneTop = { x: laneX, y: top };
+      lanes.push([laneBottom, laneTop]);
+    }
+
+    return lanes.map((lane) =>
+      lane.map((point) =>
+        rotateClockwiseAround(this.start, point, this.rotation)
+      )
+    );
+  }
+
   containsCar(car: Car) {
     const bounds = this.borders.flat();
     const xVals = bounds.map(({ x }) => x);
@@ -99,6 +128,16 @@ export class StraightRoad implements Road {
     context.lineWidth = 5;
     context.strokeStyle = "white";
 
+    context.setLineDash([this.width / 4, this.width / 4]);
+    for (const lane of this.lanes) {
+      const points = lane.map((point) => this.plane.mapToCanvas(point));
+      context.beginPath();
+      context.moveTo(points[0].x, points[0].y);
+      context.lineTo(points[1].x, points[1].y);
+      context.stroke();
+    }
+
+    context.setLineDash([]);
     for (const border of this.borders) {
       const points = border.map((point) => this.plane.mapToCanvas(point));
       context.beginPath();

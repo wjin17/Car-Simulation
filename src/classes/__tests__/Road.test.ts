@@ -7,10 +7,10 @@ describe("Roads", () => {
   const plane = new CoordPlane(Math.PI / 2, 900, 900);
 
   describe("Straight road", () => {
-    const road0 = new StraightRoad(plane, 0, 0, 300, 0);
-    const road90 = new StraightRoad(plane, 0, 0, 300, Math.PI / 2);
-    const road180 = new StraightRoad(plane, 0, 0, 300, Math.PI);
-    const road270 = new StraightRoad(plane, 0, 0, 300, (Math.PI * 3) / 2);
+    const road0 = new StraightRoad(plane, 0, 0, 300, 3, 0);
+    const road90 = new StraightRoad(plane, 0, 0, 300, 3, Math.PI / 2);
+    const road180 = new StraightRoad(plane, 0, 0, 300, 3, Math.PI);
+    const road270 = new StraightRoad(plane, 0, 0, 300, 3, (Math.PI * 3) / 2);
 
     it("should detect car in bounds", () => {
       const carInBounds = new Car(plane, 0, 0, 5);
@@ -69,10 +69,18 @@ describe("Roads", () => {
 
   describe("Turn road", () => {
     describe("Clockwise", () => {
-      const cwRoad0 = new TurnRoad(plane, 0, 0, 300, 0, "CW");
-      const cwRoad90 = new TurnRoad(plane, 0, 0, 300, Math.PI / 2, "CW");
-      const cwRoad180 = new TurnRoad(plane, 0, 0, 300, Math.PI, "CW");
-      const cwRoad270 = new TurnRoad(plane, 0, 0, 300, (Math.PI * 3) / 2, "CW");
+      const cwRoad0 = new TurnRoad(plane, 0, 0, 300, 3, 0, "CW");
+      const cwRoad90 = new TurnRoad(plane, 0, 0, 300, 3, Math.PI / 2, "CW");
+      const cwRoad180 = new TurnRoad(plane, 0, 0, 300, 3, Math.PI, "CW");
+      const cwRoad270 = new TurnRoad(
+        plane,
+        0,
+        0,
+        300,
+        3,
+        (Math.PI * 3) / 2,
+        "CW"
+      );
 
       it("should set the offset correctly", () => {
         const { x: cwX0, y: cwY0, rotation: cwRot0 } = cwRoad0.offset;
@@ -117,14 +125,15 @@ describe("Roads", () => {
     });
 
     describe("Counter clockwise", () => {
-      const ccwRoad0 = new TurnRoad(plane, 0, 0, 300, 0, "CCW");
-      const ccwRoad90 = new TurnRoad(plane, 0, 0, 300, Math.PI / 2, "CCW");
-      const ccwRoad180 = new TurnRoad(plane, 0, 0, 300, Math.PI, "CCW");
+      const ccwRoad0 = new TurnRoad(plane, 0, 0, 300, 3, 0, "CCW");
+      const ccwRoad90 = new TurnRoad(plane, 0, 0, 300, 3, Math.PI / 2, "CCW");
+      const ccwRoad180 = new TurnRoad(plane, 0, 0, 300, 3, Math.PI, "CCW");
       const ccwRoad270 = new TurnRoad(
         plane,
         0,
         0,
         300,
+        3,
         (Math.PI * 3) / 2,
         "CCW"
       );

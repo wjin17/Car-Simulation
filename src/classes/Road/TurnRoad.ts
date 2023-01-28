@@ -4,6 +4,7 @@ import {
   findCircleLineIntersections,
   pointOnSegment,
 } from "../../utils/intersections";
+import { lerp } from "../../utils/lerp";
 import { makePositiveRad, shift } from "../../utils/transformations";
 import { Car } from "../Car";
 import { CoordPlane } from "../CoordPlane";
@@ -12,11 +13,13 @@ export class TurnRoad implements Road {
   plane: CoordPlane;
   start: Point;
   width: number;
+  laneCount: number;
   rotation: number;
 
   isCW: boolean;
   origin: Point;
-  radii: number[];
+  laneRadii: number[];
+  borderRadii: number[];
   rotationStart: number;
   rotationEnd: number;
 
@@ -25,17 +28,20 @@ export class TurnRoad implements Road {
     x: number,
     y: number,
     width: number,
+    laneCount: number,
     rotation: number,
     direction: "CW" | "CCW"
   ) {
     this.plane = plane;
     this.start = { x, y };
     this.width = width;
+    this.laneCount = laneCount;
     this.rotation = rotation;
     this.isCW = direction == "CW";
 
     this.origin = this.calculateOrigin();
-    this.radii = [width, width * 2];
+    this.laneRadii = this.generateLaneRadii();
+    this.borderRadii = [width, width * 2];
 
     this.rotationStart = this.isCW ? this.rotation - Math.PI : this.rotation;
     this.rotationEnd = this.rotation - Math.PI / 2;
@@ -69,6 +75,18 @@ export class TurnRoad implements Road {
       ...offsetOrigin,
       rotation: (this.rotation + rotationDirection) % (2 * Math.PI),
     };
+  }
+
+  private generateLaneRadii() {
+    const start = this.width;
+    const end = this.width * 2;
+    const laneRadii: number[] = [];
+    for (let i = 1; i < this.laneCount; i++) {
+      const laneX = lerp(start, end, i / this.laneCount);
+      laneRadii.push(laneX);
+    }
+
+    return laneRadii;
   }
 
   calculateOrigin() {
@@ -171,16 +189,6 @@ export class TurnRoad implements Road {
         canvas.arc(x, y, 10, 0, 2 * Math.PI);
         canvas.stroke();
       });
-
-      //   const outerIntersections = findCircleLineIntersections(
-      //     this.origin,
-      //     this.width * 2,
-      //     line
-      //   );
-      //   totalIntersections.push(...innerIntersections, ...outerIntersections);
-      //   console.log(
-      //     totalIntersections.some((point) => pointOnSegment(point, line))
-      //   );
     }
   }
 
@@ -188,13 +196,29 @@ export class TurnRoad implements Road {
     context.lineWidth = 5;
     context.strokeStyle = "white";
 
-    for (const radius of this.radii) {
+    context.setLineDash([this.width / 4, this.width / 4]);
+    for (const laneRadius of this.laneRadii) {
       const { x, y } = this.plane.mapToCanvas(this.origin);
       context.beginPath();
       context.arc(
         x,
         y,
-        radius,
+        laneRadius,
+        this.rotationStart,
+        this.rotationEnd,
+        !this.isCW
+      );
+      context.stroke();
+    }
+
+    context.setLineDash([]);
+    for (const borderRadius of this.borderRadii) {
+      const { x, y } = this.plane.mapToCanvas(this.origin);
+      context.beginPath();
+      context.arc(
+        x,
+        y,
+        borderRadius,
         this.rotationStart,
         this.rotationEnd,
         !this.isCW

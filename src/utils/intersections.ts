@@ -38,26 +38,6 @@ export function polygonsIntersect(polygon1: Point[], polygon2: Point[]) {
   return false;
 }
 
-/**
- * 
- * circleCollide(circle) {
-        var slope = this.slope();
-        var yInt = this.yInt();
-        var a = 1 + slope * slope;
-        var b = 2 * (slope * (yInt - circle.y) - circle.x);
-        var c = circle.x * circle.x + (yInt - circle.y) * (yInt - circle.y) - circle.radius * circle.radius;
-
-        var d = b * b - 4 * a * c;
-
-        if (d === 0) {
-            return [(-b + Math.sqrt(d)) / (2 * a)];
-        } else if (d > 0) {
-            return [(-b + Math.sqrt(d)) / (2 * a), (-b - Math.sqrt(d)) / (2 * a)];
-        } 
-
-        return [];
-    };
- */
 export function findCircleLineIntersections(
   origin: Point,
   radius: number,
@@ -77,45 +57,26 @@ export function findCircleLineIntersections(
   const D = Math.pow(B, 2) - 4 * A * C;
 
   if (D == 0) {
-    return [(-B + Math.sqrt(D)) / (2 * A)].map((x) => ({
-      x,
-      y: slope * x + yIntercept,
-    }));
+    const intersection = [(-B + Math.sqrt(D)) / (2 * A)];
+
+    return intersection
+      .map((x) => ({
+        x,
+        y: slope * x + yIntercept,
+      }))
+      .filter((point) => Math.abs(distance(point, origin) - radius) < 0.0001);
   } else if (D >= 0) {
     const intersections = [
       (-B + Math.sqrt(D)) / (2 * A),
       (-B - Math.sqrt(D)) / (2 * A),
     ];
 
-    return intersections.map((x) => ({ x, y: slope * x + yIntercept }));
+    return intersections
+      .map((x) => ({ x, y: slope * x + yIntercept }))
+      .filter((point) => Math.abs(distance(point, origin) - radius) < 0.0001);
   }
   return [];
 }
-
-// export function pointOnSegment(point: Point, segment: Point[]) {
-//   const dxPoint = point.x - segment[0].x;
-//   const dyPoint = point.y - segment[0].y;
-
-//   const dxSegment = segment[1].x - segment[0].x;
-//   const dySegment = segment[1].y - segment[0].y;
-
-//   const cross = dxPoint * dySegment - dyPoint * dxSegment;
-//   if (cross) return false;
-
-//   if (Math.abs(dxSegment) >= Math.abs(dySegment)) {
-//     if (dxSegment > 0) {
-//       return segment[0].x <= point.x && point.x <= segment[1].x;
-//     } else {
-//       return segment[1].x <= point.x && point.x <= segment[0].x;
-//     }
-//   } else {
-//     if (dySegment > 0) {
-//       return segment[0].y <= point.x && point.y <= segment[1].x;
-//     } else {
-//       return segment[1].y <= point.x && point.y <= segment[0].x;
-//     }
-//   }
-// }
 
 export function pointOnSegment(point: Point, segment: Point[]) {
   const distanceA = distance(point, segment[0]);
