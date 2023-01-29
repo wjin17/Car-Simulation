@@ -13,12 +13,11 @@ export function linesIntersect(A: Point, B: Point, C: Point, D: Point) {
       return {
         x: lerp(A.x, B.x, t),
         y: lerp(A.y, B.y, t),
-        offset: t,
       };
     }
   }
 
-  return null;
+  return undefined;
 }
 
 export function polygonsIntersect(polygon1: Point[], polygon2: Point[]) {

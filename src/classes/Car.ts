@@ -1,6 +1,7 @@
 import { Road } from "../@types/road";
 import { CONTROLS, Controls } from "./Controls";
 import { CoordPlane } from "./CoordPlane";
+import { RoadSensor } from "./Sensors/RoadSensor";
 
 export class Car {
   plane: CoordPlane;
@@ -20,6 +21,8 @@ export class Car {
 
   distance = 0;
 
+  roadSensor: RoadSensor;
+
   constructor(
     plane: CoordPlane,
     startX: number,
@@ -34,6 +37,7 @@ export class Car {
     this.polygon = this.generateCar();
 
     //this.controls = new Controls(CONTROLS.MANUAL);
+    this.roadSensor = new RoadSensor(this, plane);
   }
 
   // distance could be dist += Math.abs(this.speed)
@@ -85,6 +89,7 @@ export class Car {
   }
 
   update(roads: Road[]) {
+    if (this.roadSensor) this.roadSensor.update(roads);
     for (const road of roads) {
       if (road.detectCollision(this)) this.collision = true;
     }
@@ -105,5 +110,7 @@ export class Car {
       else context.lineTo(x, y);
     });
     context.fill();
+
+    if (this.roadSensor) this.roadSensor.draw(context);
   }
 }

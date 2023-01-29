@@ -123,7 +123,7 @@ export class TurnRoad implements Road {
     return car.polygon.some((corner) => this.validPoint(corner));
   }
 
-  validPoint(point: Point) {
+  private validPoint(point: Point) {
     const position = distance(point, this.origin);
     const validDistance = position >= this.width && position <= this.width * 2;
     if (!validDistance) return false;
@@ -145,51 +145,29 @@ export class TurnRoad implements Road {
   detectCollision(car: Car) {
     for (let i = 0; i < car.polygon.length; i++) {
       const line = [car.polygon[i], car.polygon[(i + 1) % car.polygon.length]];
-      const innerIntersections = findCircleLineIntersections(
-        this.origin,
-        this.width * 2,
-        line
-      );
-      const outerIntersections = findCircleLineIntersections(
-        this.origin,
-        this.width,
-        line
-      );
-
-      const totalIntersections = [...innerIntersections, ...outerIntersections];
-
-      const doesIntersect = totalIntersections.some((point) =>
-        pointOnSegment(point, line)
-      );
+      const doesIntersect = this.findIntersection(line);
 
       if (doesIntersect) return true;
     }
     return false;
   }
 
-  test(car: Car, canvas: CanvasRenderingContext2D) {
-    for (let i = 0; i < car.polygon.length; i++) {
-      const line = [car.polygon[i], car.polygon[(i + 1) % car.polygon.length]];
-      const innerIntersections = findCircleLineIntersections(
-        this.origin,
-        this.width * 2,
-        line
-      );
-      const outerIntersections = findCircleLineIntersections(
-        this.origin,
-        this.width,
-        line
-      );
-      const totalIntersections = [...innerIntersections, ...outerIntersections];
-      totalIntersections.forEach((intersection) => {
-        const { x, y } = this.plane.mapToCanvas(intersection);
-        if (pointOnSegment(intersection, line)) canvas.strokeStyle = "black";
-        else canvas.strokeStyle = "white";
-        canvas.beginPath();
-        canvas.arc(x, y, 10, 0, 2 * Math.PI);
-        canvas.stroke();
-      });
-    }
+  findIntersection(line: Line) {
+    const outerIntersections = findCircleLineIntersections(
+      this.origin,
+      this.width * 2,
+      line
+    );
+    const innerIntersections = findCircleLineIntersections(
+      this.origin,
+      this.width,
+      line
+    );
+
+    const totalIntersections = [...outerIntersections, ...innerIntersections];
+    return totalIntersections.find((intersection) => {
+      if (pointOnSegment(intersection, line)) return intersection;
+    });
   }
 
   draw(context: CanvasRenderingContext2D) {

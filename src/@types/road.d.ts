@@ -5,6 +5,7 @@ export interface Road {
 
   containsCar(car: Car): boolean;
   detectCollision(car: Car): boolean;
+  findIntersection(car: Car): Point | undefined;
 
   draw(context: CanvasRenderingContext2D): void;
 }

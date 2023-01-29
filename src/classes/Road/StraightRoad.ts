@@ -1,5 +1,5 @@
 import { Road, StraightBorder } from "../../@types/road";
-import { polygonsIntersect } from "../../utils/intersections";
+import { linesIntersect, polygonsIntersect } from "../../utils/intersections";
 import { lerp } from "../../utils/lerp";
 import { maxReduction, minReduction } from "../../utils/reductions";
 import { rotateClockwiseAround, shift } from "../../utils/transformations";
@@ -122,6 +122,13 @@ export class StraightRoad implements Road {
       if (polygonsIntersect(car.polygon, border)) return true;
     }
     return false;
+  }
+
+  findIntersection(line: Line) {
+    const intersections = this.borders.map((border) =>
+      linesIntersect(line[0], line[1], border[0], border[1])
+    );
+    return intersections.find((intersection) => intersection);
   }
 
   draw(context: CanvasRenderingContext2D) {

@@ -22,7 +22,6 @@ export function createNascar(plane: CoordPlane, width: number, lanes: number) {
     turnRoad1.offset.rotation,
     "CCW"
   );
-  console.log(turnRoad2.offset.rotation);
   const road2 = new StraightRoad(
     plane,
     turnRoad2.offset.x,

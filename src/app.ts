@@ -2,6 +2,7 @@ import "../css/style.css";
 import { Car } from "./classes/Car";
 import { CONTROLS, Controls } from "./classes/Controls";
 import { CoordPlane } from "./classes/CoordPlane";
+import { TurnRoad } from "./classes/Road/TurnRoad";
 import Tracks from "./tracks";
 
 console.log("begin");
@@ -54,6 +55,10 @@ function animate() {
   for (const road of track) {
     road.draw(carContext);
   }
+
+  document.getElementById("reset")!.onclick = () => {
+    console.log("reset!");
+  };
 
   car.draw(carContext, "red");
 
