@@ -1,4 +1,4 @@
-import { Road, TurnBorder } from "../../@types/road";
+import { Road, RoadOffset, TurnBorder } from "../../@types/road";
 import { distance } from "../../utils/distance";
 import {
   findCircleLineIntersections,
@@ -25,13 +25,12 @@ export class TurnRoad implements Road {
 
   constructor(
     plane: CoordPlane,
-    x: number,
-    y: number,
+    offset: RoadOffset,
     width: number,
     laneCount: number,
-    rotation: number,
     direction: "CW" | "CCW"
   ) {
+    const { x, y, rotation } = offset;
     this.plane = plane;
     this.start = { x, y };
     this.width = width;

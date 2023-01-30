@@ -11,7 +11,7 @@ export class Car {
   height = 70;
   polygon: Point[] = [];
 
-  controls?: Controls;
+  controls: Controls;
   maxSpeed: number;
   speed = 0;
   acceleration = 0.2;
@@ -21,13 +21,14 @@ export class Car {
 
   distance = 0;
 
-  roadSensor: RoadSensor;
+  roadSensor?: RoadSensor = undefined;
 
   constructor(
     plane: CoordPlane,
     startX: number,
     startY: number,
-    maxSpeed: number
+    maxSpeed: number,
+    controlType?: CONTROLS
   ) {
     this.plane = plane;
     this.x = startX;
@@ -36,8 +37,13 @@ export class Car {
 
     this.polygon = this.generateCar();
 
-    //this.controls = new Controls(CONTROLS.MANUAL);
-    this.roadSensor = new RoadSensor(this, plane);
+    if (controlType == CONTROLS.SELF_DRIVING) {
+      this.roadSensor = new RoadSensor(this, plane);
+      this.controls = new Controls(controlType, this.roadSensor.rayCount);
+    } else {
+      console.log("should be manual");
+      this.controls = new Controls(controlType);
+    }
   }
 
   // distance could be dist += Math.abs(this.speed)
@@ -89,7 +95,10 @@ export class Car {
   }
 
   update(roads: Road[]) {
-    if (this.roadSensor) this.roadSensor.update(roads);
+    if (this.roadSensor) {
+      this.roadSensor.update(roads);
+      this.controls.useSelfDriving(this.roadSensor.readings);
+    }
     for (const road of roads) {
       if (road.detectCollision(this)) this.collision = true;
     }

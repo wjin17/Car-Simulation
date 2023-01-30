@@ -5,12 +5,16 @@ import { TurnRoad } from "../Road/TurnRoad";
 
 describe("Roads", () => {
   const plane = new CoordPlane(Math.PI / 2, 900, 900);
+  const start0 = { x: 0, y: 0, rotation: 0 };
+  const start90 = { x: 0, y: 0, rotation: Math.PI / 2 };
+  const start180 = { x: 0, y: 0, rotation: Math.PI };
+  const start270 = { x: 0, y: 0, rotation: (3 * Math.PI) / 2 };
 
   describe("Straight road", () => {
-    const road0 = new StraightRoad(plane, 0, 0, 300, 3, 0);
-    const road90 = new StraightRoad(plane, 0, 0, 300, 3, Math.PI / 2);
-    const road180 = new StraightRoad(plane, 0, 0, 300, 3, Math.PI);
-    const road270 = new StraightRoad(plane, 0, 0, 300, 3, (Math.PI * 3) / 2);
+    const road0 = new StraightRoad(plane, start0, 300, 3);
+    const road90 = new StraightRoad(plane, start90, 300, 3);
+    const road180 = new StraightRoad(plane, start180, 300, 3);
+    const road270 = new StraightRoad(plane, start270, 300, 3);
 
     it("should detect car in bounds", () => {
       const carInBounds = new Car(plane, 0, 0, 5);
@@ -69,18 +73,10 @@ describe("Roads", () => {
 
   describe("Turn road", () => {
     describe("Clockwise", () => {
-      const cwRoad0 = new TurnRoad(plane, 0, 0, 300, 3, 0, "CW");
-      const cwRoad90 = new TurnRoad(plane, 0, 0, 300, 3, Math.PI / 2, "CW");
-      const cwRoad180 = new TurnRoad(plane, 0, 0, 300, 3, Math.PI, "CW");
-      const cwRoad270 = new TurnRoad(
-        plane,
-        0,
-        0,
-        300,
-        3,
-        (Math.PI * 3) / 2,
-        "CW"
-      );
+      const cwRoad0 = new TurnRoad(plane, start0, 300, 3, "CW");
+      const cwRoad90 = new TurnRoad(plane, start90, 300, 3, "CW");
+      const cwRoad180 = new TurnRoad(plane, start180, 300, 3, "CW");
+      const cwRoad270 = new TurnRoad(plane, start270, 300, 3, "CW");
 
       it("should set the offset correctly", () => {
         const { x: cwX0, y: cwY0, rotation: cwRot0 } = cwRoad0.offset;
@@ -125,18 +121,10 @@ describe("Roads", () => {
     });
 
     describe("Counter clockwise", () => {
-      const ccwRoad0 = new TurnRoad(plane, 0, 0, 300, 3, 0, "CCW");
-      const ccwRoad90 = new TurnRoad(plane, 0, 0, 300, 3, Math.PI / 2, "CCW");
-      const ccwRoad180 = new TurnRoad(plane, 0, 0, 300, 3, Math.PI, "CCW");
-      const ccwRoad270 = new TurnRoad(
-        plane,
-        0,
-        0,
-        300,
-        3,
-        (Math.PI * 3) / 2,
-        "CCW"
-      );
+      const ccwRoad0 = new TurnRoad(plane, start0, 300, 3, "CCW");
+      const ccwRoad90 = new TurnRoad(plane, start90, 300, 3, "CCW");
+      const ccwRoad180 = new TurnRoad(plane, start180, 300, 3, "CCW");
+      const ccwRoad270 = new TurnRoad(plane, start270, 300, 3, "CCW");
 
       it("should set the offset correctly", () => {
         const { x: ccwX0, y: ccwY0, rotation: ccwRot0 } = ccwRoad0.offset;

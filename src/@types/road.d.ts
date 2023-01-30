@@ -17,3 +17,9 @@ export type TurnBorder = {
   start: number;
   end: number;
 };
+
+export type RoadOffset = {
+  x: number;
+  y: number;
+  rotation: number;
+};

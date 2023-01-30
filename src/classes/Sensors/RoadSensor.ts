@@ -1,4 +1,5 @@
 import { Road } from "../../@types/road";
+import { distance } from "../../utils/distance";
 import { lerp } from "../../utils/lerp";
 import { Car } from "../Car";
 import { CoordPlane } from "../CoordPlane";
@@ -12,7 +13,6 @@ export class RoadSensor {
   raySpread = Math.PI / 2;
 
   rays: Line[] = [];
-  readings: number[] = [];
 
   intersections: (Point | undefined)[] = [];
 
@@ -60,6 +60,22 @@ export class RoadSensor {
 
       this.rays.push([start, end]);
     }
+  }
+
+  get readings() {
+    const values: number[] = [];
+    for (let i = 0; i < this.rayCount; i++) {
+      let middle = this.plane.mapToCanvas(this.rays[i][1]);
+      if (this.intersections[i]) {
+        middle = this.plane.mapToCanvas(this.intersections[i]!);
+      }
+
+      const end = this.plane.mapToCanvas(this.rays[i][1]);
+
+      values.push(distance(end, middle) / this.rayLength);
+    }
+
+    return values;
   }
 
   draw(context: CanvasRenderingContext2D) {

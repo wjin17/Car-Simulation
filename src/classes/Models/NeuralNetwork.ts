@@ -68,7 +68,7 @@ export class Layer {
     }
   }
 
-  static feedForward(givenInputs: any, layer: Layer) {
+  static feedForward(givenInputs: number[], layer: Layer) {
     for (let i = 0; i < layer.inputs.length; i++) {
       layer.inputs[i] = givenInputs[i];
     }

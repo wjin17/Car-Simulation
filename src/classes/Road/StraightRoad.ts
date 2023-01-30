@@ -1,4 +1,4 @@
-import { Road, StraightBorder } from "../../@types/road";
+import { Road, RoadOffset, StraightBorder } from "../../@types/road";
 import { linesIntersect, polygonsIntersect } from "../../utils/intersections";
 import { lerp } from "../../utils/lerp";
 import { maxReduction, minReduction } from "../../utils/reductions";
@@ -18,12 +18,11 @@ export class StraightRoad implements Road {
 
   constructor(
     plane: CoordPlane,
-    x: number,
-    y: number,
+    offset: RoadOffset,
     width: number,
-    laneCount: number,
-    rotation: number
+    laneCount: number
   ) {
+    const { x, y, rotation } = offset;
     this.plane = plane;
     this.start = { x, y };
     this.width = width;
