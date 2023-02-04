@@ -4,11 +4,11 @@ import { lerp } from "../../utils/lerp";
 import { Car } from "../Car";
 import { CoordPlane } from "../CoordPlane";
 
-export class RoadSensor {
+export class LaneSensor {
   car: Car;
   plane: CoordPlane;
 
-  rayCount = 5;
+  rayCount = 2;
   rayLength = 150;
   raySpread = Math.PI / 2;
 
@@ -21,42 +21,25 @@ export class RoadSensor {
     this.plane = plane;
   }
 
-  update(roads: Road[], traffic: Car[]) {
+  update(roads: Road[]) {
     this.castRays();
 
     const borderIntersections = roads.map((road) =>
-      this.rays.map((ray) => road.findBorderIntersection(ray))
+      this.rays.map((ray) => road.findLaneIntersection(ray))
     );
-    const trafficIntersections = traffic.map((car) =>
-      this.rays.map((ray) => car.findRayIntersection(ray))
-    );
-
-    const totalIntersections = [
-      ...borderIntersections,
-      ...trafficIntersections,
-    ];
-    const intersectionLengths = totalIntersections.map(
+    const intersectionLenghts = borderIntersections.map(
       (intersections) => intersections.length
     );
 
     let i = 0;
     const intersections: (Point | undefined)[] = [];
 
-    while (intersectionLengths.some((length) => i < length)) {
-      const intersectionsForRay = totalIntersections.map(
+    while (intersectionLenghts.some((length) => i < length)) {
+      const validIntersection = borderIntersections.find(
         (intersections) => intersections[i]
       );
-      let closestIntersection: Point | undefined = undefined;
-      intersectionsForRay.forEach((intersection) => {
-        if (!closestIntersection) closestIntersection = intersection;
-        if (intersection && closestIntersection) {
-          const isCloser =
-            distance(this.car, intersection) <
-            distance(this.car, closestIntersection);
-          if (isCloser) closestIntersection = intersection;
-        }
-      });
-      intersections.push(closestIntersection);
+      if (validIntersection) intersections.push(validIntersection[i]);
+      else intersections.push(undefined);
       i++;
     }
 

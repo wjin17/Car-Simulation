@@ -119,10 +119,10 @@ export class TurnRoad implements Road {
   }
 
   containsCar(car: Car) {
-    return car.polygon.some((corner) => this.validPoint(corner));
+    return car.polygon.some((corner) => this.containsPoint(car));
   }
 
-  private validPoint(point: Point) {
+  containsPoint(point: Point) {
     const position = distance(point, this.origin);
     const validDistance = position >= this.width && position <= this.width * 2;
     if (!validDistance) return false;
@@ -144,27 +144,28 @@ export class TurnRoad implements Road {
   detectCollision(car: Car) {
     for (let i = 0; i < car.polygon.length; i++) {
       const line = [car.polygon[i], car.polygon[(i + 1) % car.polygon.length]];
-      const doesIntersect = this.findIntersection(line);
+      const doesIntersect = this.findBorderIntersection(line);
 
       if (doesIntersect) return true;
     }
     return false;
   }
 
-  findIntersection(line: Line) {
-    const outerIntersections = findCircleLineIntersections(
-      this.origin,
-      this.width * 2,
-      line
-    );
-    const innerIntersections = findCircleLineIntersections(
-      this.origin,
-      this.width,
-      line
-    );
+  findBorderIntersection(line: Line) {
+    const borderIntersections = this.borderRadii
+      .map((radius) => findCircleLineIntersections(this.origin, radius, line))
+      .flat();
 
-    const totalIntersections = [...outerIntersections, ...innerIntersections];
-    return totalIntersections.find((intersection) => {
+    return borderIntersections.find((intersection) => {
+      if (pointOnSegment(intersection, line)) return intersection;
+    });
+  }
+
+  findLaneIntersection(line: Line) {
+    const laneIntersections = [...this.laneRadii, ...this.borderRadii]
+      .map((radius) => findCircleLineIntersections(this.origin, radius, line))
+      .flat();
+    return laneIntersections.find((intersection) => {
       if (pointOnSegment(intersection, line)) return intersection;
     });
   }

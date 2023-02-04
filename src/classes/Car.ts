@@ -1,7 +1,10 @@
 import { Road } from "../@types/road";
 import { CONTROLS, Controls } from "./Controls";
 import { CoordPlane } from "./CoordPlane";
+import { LaneSensor } from "./Sensors/LaneSensor";
 import { RoadSensor } from "./Sensors/RoadSensor";
+import { linesIntersect, polygonsIntersect } from "../utils/intersections";
+import { distance } from "../utils/distance";
 
 export class Car {
   plane: CoordPlane;
@@ -11,6 +14,7 @@ export class Car {
   height = 70;
   angle = 0;
   polygon: Point[] = [];
+  controlType: CONTROLS;
 
   controls: Controls;
   maxSpeed: number;
@@ -22,7 +26,8 @@ export class Car {
 
   distance = 0;
 
-  roadSensor?: RoadSensor = undefined;
+  roadSensor?: RoadSensor;
+  laneSensor?: LaneSensor;
 
   constructor(
     plane: CoordPlane,
@@ -37,13 +42,22 @@ export class Car {
     this.y = startY;
     if (angle) this.angle = angle;
     this.maxSpeed = maxSpeed;
+    this.controlType = controlType || CONTROLS.DUMMY;
 
     this.polygon = this.generateCar();
 
-    if (controlType == CONTROLS.SELF_DRIVING) {
+    if (controlType == CONTROLS.DUMMY) {
+      this.laneSensor = new LaneSensor(this, plane);
+      this.controls = new Controls(controlType);
+    } else if (controlType == CONTROLS.LANE_ASSIST) {
+      this.laneSensor = new LaneSensor(this, plane);
+      this.controls = new Controls(controlType);
+    } else if (controlType == CONTROLS.SELF_DRIVING) {
       this.roadSensor = new RoadSensor(this, plane);
       this.controls = new Controls(controlType, this.roadSensor.rayCount);
     } else {
+      //this.laneSensor = new LaneSensor(this, plane);
+      this.roadSensor = new RoadSensor(this, plane);
       this.controls = new Controls(controlType);
     }
   }
@@ -73,6 +87,36 @@ export class Car {
     return points;
   }
 
+  detectCollision(car: Car) {
+    return polygonsIntersect(car.polygon, this.polygon);
+  }
+
+  findRayIntersection(line: Line) {
+    const intersections = [];
+
+    for (let i = 0; i < this.polygon.length; i++) {
+      intersections.push(
+        linesIntersect(
+          line[0],
+          line[1],
+          this.polygon[i],
+          this.polygon[(i + 1) % this.polygon.length]
+        )
+      );
+    }
+
+    let closestIntersection: Point | undefined = undefined;
+    intersections.forEach((intersection) => {
+      if (!closestIntersection) closestIntersection = intersection;
+      if (intersection && closestIntersection) {
+        const isCloser =
+          distance(this, intersection) < distance(this, closestIntersection);
+        if (isCloser) closestIntersection = intersection;
+      }
+    });
+    return closestIntersection;
+  }
+
   move() {
     if (this.controls) {
       const { forward, reverse, left, right } = this.controls;
@@ -96,10 +140,34 @@ export class Car {
     this.y += Math.cos(this.angle) * this.speed;
   }
 
-  update(roads: Road[]) {
+  update(roads: Road[], traffic: Car[]) {
     if (this.roadSensor) {
-      this.roadSensor.update(roads);
-      this.controls.useSelfDriving(this.roadSensor.readings);
+      this.roadSensor.update(roads, traffic);
+      if (this.controlType == CONTROLS.SELF_DRIVING) {
+        this.controls.useSelfDriving(this.roadSensor.readings);
+      }
+    }
+    if (this.laneSensor) {
+      this.laneSensor.update(roads);
+      this.controls.useLaneAssist(this.laneSensor.readings);
+    }
+    for (const road of roads) {
+      if (road.detectCollision(this)) this.collision = true;
+    }
+    for (const trafficCar of traffic) {
+      if (this.detectCollision(trafficCar)) this.collision = true;
+    }
+    if (!this.collision) {
+      this.move();
+      this.distance += this.speed;
+      this.polygon = this.generateCar();
+    }
+  }
+
+  updateTraffic(roads: Road[]) {
+    if (this.laneSensor) {
+      this.laneSensor!.update(roads);
+      this.controls.useLaneAssist(this.laneSensor!.readings);
     }
     for (const road of roads) {
       if (road.detectCollision(this)) this.collision = true;
@@ -123,5 +191,8 @@ export class Car {
     context.fill();
 
     if (this.roadSensor) this.roadSensor.draw(context);
+    if (this.laneSensor && this.controlType !== CONTROLS.DUMMY) {
+      this.laneSensor.draw(context);
+    }
   }
 }

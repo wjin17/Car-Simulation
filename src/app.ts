@@ -7,6 +7,8 @@ import { NeuralNetwork } from "./classes/Models/NeuralNetwork";
 import { StraightRoad } from "./classes/Road/StraightRoad";
 import { Visualizer } from "./classes/Visualizer";
 import Tracks from "./tracks";
+import { distance } from "./utils/distance";
+import { randomIntBetween } from "./utils/random";
 
 console.log("begin");
 
@@ -28,7 +30,7 @@ const plane = new CoordPlane(
   carCanvas.offsetHeight / 2
 );
 
-let car = new Car(plane, 0, 0, 5, 0, CONTROLS.MANUAL);
+//let car = new Car(plane, 0, 0, 5, 0, CONTROLS.SELF_DRIVING);
 let cars = generateCars(10);
 let bestCar: Car;
 
@@ -39,10 +41,11 @@ window.onresize = () => {
 
 const track = Tracks.Mario.createMarioCircuit1(plane, 300, 3);
 
-const traffic = generateTraffic(track);
+let traffic = generateTraffic(track);
 
 function resetSimulation() {
   const car = getBestCar(cars);
+  traffic = generateTraffic(track);
   if (!bestCar) bestCar = car;
   if (car.distance > bestCar.distance) bestCar = car;
   cars = generateCars(50);
@@ -52,35 +55,7 @@ function resetSimulation() {
   }
 }
 
-function animateSingle() {
-  carContext.canvas.width = carCanvas.offsetWidth;
-  carContext.canvas.height = carCanvas.offsetHeight;
-
-  for (const road of track) {
-    road.draw(carContext);
-  }
-
-  for (const trafficCar of traffic) {
-    trafficCar.draw(carContext, "blue");
-  }
-
-  plane.updateCenter(car);
-
-  const currentRoads = track.filter((road) => road.containsCar(car));
-  car.update(currentRoads);
-  car.draw(carContext, "red");
-
-  document.getElementById("save")!.onclick = () => {
-    console.log("reset!");
-    if (track[0] instanceof StraightRoad) {
-      console.log(track[0].getLaneCenter(1));
-    }
-  };
-
-  requestAnimationFrame(animateSingle);
-}
-
-// function animateMultiple() {
+// function animateSingle() {
 //   carContext.canvas.width = carCanvas.offsetWidth;
 //   carContext.canvas.height = carCanvas.offsetHeight;
 
@@ -88,44 +63,91 @@ function animateSingle() {
 //     road.draw(carContext);
 //   }
 
-//   carContext.globalAlpha = 0.2;
-//   for (const currentCar of cars) {
-//     const currentRoads = track.filter((road) => road.containsCar(currentCar));
-//     currentCar.update(currentRoads);
-//     currentCar.draw(carContext, "red");
+//   if (traffic.length) {
+//     for (const trafficCar of traffic) {
+//       //const trafficRoad = track.find((road) => road.containsPoint(car));
+//       const sensorRoads = track.filter((road) =>
+//         trafficCar
+//           .laneSensor!.rays.flat()
+//           .some((point) => road.containsPoint(point))
+//       );
+//       trafficCar.updateTraffic(sensorRoads);
+//       trafficCar.draw(carContext, "blue");
+//     }
 //   }
-
-//   const car = getBestCar(cars);
 
 //   plane.updateCenter(car);
 
-//   // document.getElementById("reset")!.onclick = () => {
-//   //   console.log("reset!");
-//   //   console.log(car.roadSensor!.readings);
-//   // };
-//   carContext.globalAlpha = 1;
+//   const currentRoads = track.filter((road) => {
+//     return road.containsCar(car); //||
+//     //car.laneSensor!.rays.flat().some((point) => road.containsPoint(point))
+//   });
+//   const nearestTraffic = traffic.filter(
+//     (dummyCar) => distance(dummyCar, car) < 150
+//   );
+//   car.update(currentRoads, nearestTraffic);
 //   car.draw(carContext, "red");
-//   if (car.controls.brain) {
-//     Visualizer.drawNetwork(networkContext, car.controls.brain);
-//   }
 
-//   if (cars.every((car) => car.collision)) resetSimulation();
+//   document.getElementById("save")!.onclick = () => {
+//     console.log("reset!");
+//     //console.log("bro", car.laneSensor!.rays.flat());
+//     //console.log("aga", car.roadSensor?.wtfBRo(currentRoads, traffic));
+//     console.log(car.roadSensor?.readings);
+//     // if (track[0] instanceof StraightRoad) {
+//     //   console.log(track[0].getLaneCenter(1));
+//     // }
+//   };
 
-//   // if (car.collision && car.controls.brain) {
-//   //   if (!bestCar) bestCar = car;
-//   //   if (car.distance > bestCar.distance) bestCar = car;
-//   //   cars = generateCars(50);
-//   //   cars[0].controls.brain = bestCar.controls.brain;
-//   //   for (let i = 1; i < cars.length; i++) {
-//   //     NeuralNetwork.mutate(cars[i].controls.brain!, 0.2);
-//   //   }
-//   //   NeuralNetwork.mutate(car.controls.brain!);
-//   // }
-
-//   requestAnimationFrame(animateMultiple);
+//   requestAnimationFrame(animateSingle);
 // }
 
-animateSingle();
+function animateMultiple() {
+  carContext.canvas.width = carCanvas.offsetWidth;
+  carContext.canvas.height = carCanvas.offsetHeight;
+
+  for (const road of track) {
+    road.draw(carContext);
+  }
+
+  if (traffic.length) {
+    for (const trafficCar of traffic) {
+      //const trafficRoad = track.find((road) => road.containsPoint(car));
+      const sensorRoads = track.filter((road) =>
+        trafficCar
+          .laneSensor!.rays.flat()
+          .some((point) => road.containsPoint(point))
+      );
+      trafficCar.updateTraffic(sensorRoads);
+      trafficCar.draw(carContext, "blue");
+    }
+  }
+
+  carContext.globalAlpha = 0.2;
+  for (const currentCar of cars) {
+    const currentRoads = track.filter((road) => road.containsCar(currentCar));
+    const nearestTraffic = traffic.filter(
+      (dummyCar) => distance(dummyCar, currentCar) < 150
+    );
+    currentCar.update(currentRoads, nearestTraffic);
+    currentCar.draw(carContext, "red");
+  }
+
+  const car = getBestCar(cars);
+
+  plane.updateCenter(car);
+
+  carContext.globalAlpha = 1;
+  car.draw(carContext, "red");
+  if (car.controls.brain) {
+    Visualizer.drawNetwork(networkContext, car.controls.brain);
+  }
+
+  if (cars.every((car) => car.collision)) resetSimulation();
+
+  requestAnimationFrame(animateMultiple);
+}
+
+animateMultiple();
 
 function generateCars(numCars: number) {
   let newCars = [];
@@ -138,18 +160,22 @@ function generateCars(numCars: number) {
 
 function generateTraffic(roads: Road[]) {
   const traffic: Car[] = [];
-  for (const road of roads) {
-    if (road instanceof StraightRoad) {
-      const { x, y, rotation } = road.getLaneCenter(3);
-      traffic.push(new Car(plane, x, y, 2, rotation, CONTROLS.DUMMY));
+  roads.forEach((road, index) => {
+    if (road instanceof StraightRoad && index != 0) {
+      const lane = randomIntBetween(1, 3);
+      const { x, y, rotation } = road.getLaneCenter(lane);
+      traffic.push(new Car(plane, x, y, 3, rotation, CONTROLS.DUMMY));
     }
-  }
+  });
   return traffic;
 }
 
 function getBestCar(cars: Car[]) {
   return cars.reduce((prev, curr) => {
-    return prev.distance > curr.distance ? prev : curr;
+    const longer = prev.distance < curr.distance;
+    const noCollision = !curr.collision;
+    if (longer && noCollision) return curr;
+    else return prev;
   }, cars[0]);
 }
 

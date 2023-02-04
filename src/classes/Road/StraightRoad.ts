@@ -2,11 +2,7 @@ import { Road, RoadOffset, StraightBorder } from "../../@types/road";
 import { linesIntersect, polygonsIntersect } from "../../utils/intersections";
 import { lerp } from "../../utils/lerp";
 import { maxReduction, minReduction } from "../../utils/reductions";
-import {
-  rotateClockwise,
-  rotateClockwiseAround,
-  shift,
-} from "../../utils/transformations";
+import { rotateClockwiseAround, shift } from "../../utils/transformations";
 import { Car } from "../Car";
 import { CoordPlane } from "../CoordPlane";
 
@@ -19,6 +15,11 @@ export class StraightRoad implements Road {
 
   lanes: Point[][];
   borders: Point[][];
+
+  xMin: number;
+  xMax: number;
+  yMin: number;
+  yMax: number;
 
   constructor(
     plane: CoordPlane,
@@ -35,6 +36,12 @@ export class StraightRoad implements Road {
 
     this.lanes = this.generateLanes();
     this.borders = this.generateBorders();
+    const { xMin, xMax, yMin, yMax } = this.getBounds();
+
+    this.xMin = xMin;
+    this.xMax = xMax;
+    this.yMin = yMin;
+    this.yMax = yMax;
   }
 
   get offset() {
@@ -77,8 +84,8 @@ export class StraightRoad implements Road {
     );
 
     return {
-      x, //: laneX,
-      y, //: laneY,
+      x,
+      y,
       rotation: this.rotation,
     };
   }
@@ -124,7 +131,7 @@ export class StraightRoad implements Road {
     );
   }
 
-  containsCar(car: Car) {
+  private getBounds() {
     const bounds = this.borders.flat();
     const xVals = bounds.map(({ x }) => x);
     const yVals = bounds.map(({ y }) => y);
@@ -132,11 +139,18 @@ export class StraightRoad implements Road {
     const xMax = xVals.reduce(maxReduction, xVals[0]);
     const yMin = yVals.reduce(minReduction, yVals[0]);
     const yMax = yVals.reduce(maxReduction, yVals[0]);
-    for (const { x, y } of car.polygon) {
-      const xInBounds = x > xMin && x < xMax;
-      const yInBounds = y > yMin && y < yMax;
-      if (xInBounds && yInBounds) return true;
-    }
+
+    return { xMin, xMax, yMin, yMax };
+  }
+
+  containsCar(car: Car) {
+    return car.polygon.some((corner) => this.containsPoint(corner));
+  }
+
+  containsPoint({ x, y }: Point) {
+    const xInBounds = x > this.xMin && x < this.xMax;
+    const yInBounds = y > this.yMin && y < this.yMax;
+    if (xInBounds && yInBounds) return true;
     return false;
   }
 
@@ -147,8 +161,15 @@ export class StraightRoad implements Road {
     return false;
   }
 
-  findIntersection(line: Line) {
+  findBorderIntersection(line: Line) {
     const intersections = this.borders.map((border) =>
+      linesIntersect(line[0], line[1], border[0], border[1])
+    );
+    return intersections.find((intersection) => intersection);
+  }
+
+  findLaneIntersection(line: Line) {
+    const intersections = [...this.lanes, ...this.borders].map((border) =>
       linesIntersect(line[0], line[1], border[0], border[1])
     );
     return intersections.find((intersection) => intersection);

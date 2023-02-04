@@ -4,8 +4,10 @@ export interface Road {
   start: Point;
 
   containsCar(car: Car): boolean;
+  containsCar(car: Car): boolean;
   detectCollision(car: Car): boolean;
-  findIntersection(car: Car): Point | undefined;
+  findBorderIntersection(line: Line): Point | undefined;
+  findLaneIntersection(line: Line): Point | undefined;
 
   draw(context: CanvasRenderingContext2D): void;
 }

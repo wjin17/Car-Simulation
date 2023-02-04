@@ -81,5 +81,5 @@ export function pointOnSegment(point: Point, segment: Point[]) {
   const distanceA = distance(point, segment[0]);
   const distanceB = distance(point, segment[1]);
   const distances = distanceA + distanceB - distance(segment[0], segment[1]);
-  return Math.abs(distances) < 0.00001;
+  return Math.abs(distances) < 0.00000001;
 }

@@ -14,20 +14,24 @@ export class Controls {
   right = false;
   reverse = false;
 
+  manualOverride = false;
+
   brain: NeuralNetwork | undefined = undefined;
 
   constructor(type?: CONTROLS, rays?: number) {
     switch (type) {
+      case CONTROLS.DUMMY:
+        this.forward = true;
+        break;
+      case CONTROLS.LANE_ASSIST:
+        this.manualControls();
+      // fsd will switch between lane assist and NN
       case CONTROLS.SELF_DRIVING:
         this.brain = new NeuralNetwork([rays!, 6, 4]!);
         break;
-      case CONTROLS.DUMMY:
-        // do nothing hehe
-        break;
-      default: {
+      default:
         this.manualControls();
         break;
-      }
     }
   }
 
@@ -38,10 +42,14 @@ export class Controls {
           this.forward = true;
           break;
         case "ArrowLeft":
+          this.manualOverride = true;
           this.left = true;
+          this.right = false;
           break;
         case "ArrowRight":
+          this.manualOverride = true;
           this.right = true;
+          this.left = false;
           break;
         case "ArrowDown":
           this.reverse = true;
@@ -55,9 +63,11 @@ export class Controls {
           this.forward = false;
           break;
         case "ArrowLeft":
+          this.manualOverride = false;
           this.left = false;
           break;
         case "ArrowRight":
+          this.manualOverride = false;
           this.right = false;
           break;
         case "ArrowDown":
@@ -65,6 +75,19 @@ export class Controls {
           break;
       }
     };
+  }
+
+  useLaneAssist(readings: number[]) {
+    if (!this.manualOverride) {
+      if (readings[0] > readings[1]) {
+        this.left = true;
+        this.right = false;
+      }
+      if (readings[0] < readings[1]) {
+        this.left = false;
+        this.right = true;
+      }
+    }
   }
 
   useSelfDriving(readings: number[]) {
@@ -92,7 +115,7 @@ export class Controls {
     } else {
       this.reverse = false;
     }
-    this.forward = true;
-    this.reverse = false;
+    //this.forward = true;
+    //this.reverse = false;
   }
 }

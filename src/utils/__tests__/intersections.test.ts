@@ -9,7 +9,6 @@ describe("Intersections", () => {
     ];
 
     const intersections = findCircleLineIntersections(origin, 10, line);
-    console.log("bruh aint no way", intersections);
 
     // expect(x).toBeCloseTo(150);
     // expect(y).toBeCloseTo(150);
