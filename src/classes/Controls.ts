@@ -21,6 +21,9 @@ export class Controls {
       case CONTROLS.SELF_DRIVING:
         this.brain = new NeuralNetwork([rays!, 6, 4]!);
         break;
+      case CONTROLS.DUMMY:
+        // do nothing hehe
+        break;
       default: {
         this.manualControls();
         break;

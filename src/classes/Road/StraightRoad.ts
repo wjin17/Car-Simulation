@@ -2,7 +2,11 @@ import { Road, RoadOffset, StraightBorder } from "../../@types/road";
 import { linesIntersect, polygonsIntersect } from "../../utils/intersections";
 import { lerp } from "../../utils/lerp";
 import { maxReduction, minReduction } from "../../utils/reductions";
-import { rotateClockwiseAround, shift } from "../../utils/transformations";
+import {
+  rotateClockwise,
+  rotateClockwiseAround,
+  shift,
+} from "../../utils/transformations";
 import { Car } from "../Car";
 import { CoordPlane } from "../CoordPlane";
 
@@ -55,6 +59,26 @@ export class StraightRoad implements Road {
     const shiftedCenter = shift(this.start, xOffset, yOffset);
     return {
       ...shiftedCenter,
+      rotation: this.rotation,
+    };
+  }
+
+  getLaneCenter(lane: number) {
+    const laneWidth = this.width / this.laneCount;
+    const left = this.start.x - this.width / 2;
+    const laneX =
+      left + laneWidth / 2 + Math.min(lane - 1, this.laneCount - 1) * laneWidth;
+    const laneY = this.start.y;
+
+    const { x, y } = rotateClockwiseAround(
+      this.start,
+      { x: laneX, y: laneY },
+      this.rotation
+    );
+
+    return {
+      x, //: laneX,
+      y, //: laneY,
       rotation: this.rotation,
     };
   }

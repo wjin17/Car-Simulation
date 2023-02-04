@@ -9,6 +9,7 @@ export class Car {
   y: number;
   width = 40;
   height = 70;
+  angle = 0;
   polygon: Point[] = [];
 
   controls: Controls;
@@ -16,7 +17,7 @@ export class Car {
   speed = 0;
   acceleration = 0.2;
   break = 0.05;
-  angle = 0;
+
   collision = false;
 
   distance = 0;
@@ -28,11 +29,13 @@ export class Car {
     startX: number,
     startY: number,
     maxSpeed: number,
+    angle?: number,
     controlType?: CONTROLS
   ) {
     this.plane = plane;
     this.x = startX;
     this.y = startY;
+    if (angle) this.angle = angle;
     this.maxSpeed = maxSpeed;
 
     this.polygon = this.generateCar();
@@ -41,7 +44,6 @@ export class Car {
       this.roadSensor = new RoadSensor(this, plane);
       this.controls = new Controls(controlType, this.roadSensor.rayCount);
     } else {
-      console.log("should be manual");
       this.controls = new Controls(controlType);
     }
   }
