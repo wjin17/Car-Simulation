@@ -4,7 +4,7 @@ export interface Road {
   start: Point;
 
   containsCar(car: Car): boolean;
-  containsCar(car: Car): boolean;
+  containsPoint(car: Car): boolean;
   detectCollision(car: Car): boolean;
   findBorderIntersection(line: Line): Point | undefined;
   findLaneIntersection(line: Line): Point | undefined;

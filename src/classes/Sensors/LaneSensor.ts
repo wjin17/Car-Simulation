@@ -10,7 +10,7 @@ export class LaneSensor {
 
   rayCount = 2;
   rayLength = 150;
-  raySpread = Math.PI / 2;
+  raySpread = Math.PI / 1.5;
 
   rays: Line[] = [];
 
@@ -91,7 +91,7 @@ export class LaneSensor {
 
       context.beginPath();
       context.lineWidth = 2;
-      context.strokeStyle = "yellow";
+      context.strokeStyle = "orange";
       context.moveTo(start.x, start.y);
       context.lineTo(middle.x, middle.y);
       context.stroke();

@@ -119,7 +119,7 @@ export class TurnRoad implements Road {
   }
 
   containsCar(car: Car) {
-    return car.polygon.some((corner) => this.containsPoint(car));
+    return car.polygon.some((corner) => this.containsPoint(corner));
   }
 
   containsPoint(point: Point) {

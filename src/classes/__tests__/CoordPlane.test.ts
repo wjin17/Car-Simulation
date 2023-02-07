@@ -41,7 +41,7 @@ describe("CoordPlane", () => {
       canvasWidth / 2
     );
     const point = { x: 40, y: 20 };
-    const car = new Car(plane, 10, 10, 5);
+    const car = new Car(plane, 10, 10, 5, 0);
     plane.updateCenter(car);
     const { x, y } = plane.mapToCanvas(point);
 

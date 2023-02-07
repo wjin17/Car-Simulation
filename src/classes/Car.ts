@@ -28,12 +28,14 @@ export class Car {
 
   roadSensor?: RoadSensor;
   laneSensor?: LaneSensor;
+  specimenId = 0;
 
   constructor(
     plane: CoordPlane,
     startX: number,
     startY: number,
     maxSpeed: number,
+    specimenId: number,
     angle?: number,
     controlType?: CONTROLS
   ) {
@@ -42,6 +44,7 @@ export class Car {
     this.y = startY;
     if (angle) this.angle = angle;
     this.maxSpeed = maxSpeed;
+    this.specimenId = specimenId;
     this.controlType = controlType || CONTROLS.DUMMY;
 
     this.polygon = this.generateCar();
@@ -55,9 +58,12 @@ export class Car {
     } else if (controlType == CONTROLS.SELF_DRIVING) {
       this.roadSensor = new RoadSensor(this, plane);
       this.controls = new Controls(controlType, this.roadSensor.rayCount);
+    } else if (controlType == CONTROLS.FULL_SELF_DRIVING) {
+      this.roadSensor = new RoadSensor(this, plane);
+      this.laneSensor = new LaneSensor(this, plane);
+      this.controls = new Controls(controlType, this.roadSensor.rayCount);
     } else {
       //this.laneSensor = new LaneSensor(this, plane);
-      this.roadSensor = new RoadSensor(this, plane);
       this.controls = new Controls(controlType);
     }
   }
@@ -143,7 +149,10 @@ export class Car {
   update(roads: Road[], traffic: Car[]) {
     if (this.roadSensor) {
       this.roadSensor.update(roads, traffic);
-      if (this.controlType == CONTROLS.SELF_DRIVING) {
+      if (
+        this.controlType == CONTROLS.SELF_DRIVING ||
+        this.controlType == CONTROLS.FULL_SELF_DRIVING
+      ) {
         this.controls.useSelfDriving(this.roadSensor.readings);
       }
     }

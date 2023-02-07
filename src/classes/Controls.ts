@@ -1,11 +1,11 @@
 import { NeuralNetwork } from "./Models/NeuralNetwork";
 
 export const enum CONTROLS {
-  MANUAL = "MANUAL",
-  DUMMY = "DUMMY",
-  LANE_ASSIST = "LANE_ASSIST",
-  SELF_DRIVING = "SELF_DRIVING",
-  FULL_SELF_DRIVING = "FULL_SELF_DRIVING",
+  MANUAL = "manual",
+  DUMMY = "dummy",
+  LANE_ASSIST = "lane-assist",
+  SELF_DRIVING = "self-driving",
+  FULL_SELF_DRIVING = "full-self-driving",
 }
 
 export class Controls {
@@ -25,8 +25,12 @@ export class Controls {
         break;
       case CONTROLS.LANE_ASSIST:
         this.manualControls();
-      // fsd will switch between lane assist and NN
+        break;
       case CONTROLS.SELF_DRIVING:
+        this.brain = new NeuralNetwork([rays!, 6, 4]!);
+        break;
+      case CONTROLS.FULL_SELF_DRIVING:
+        //this.forward = true;
         this.brain = new NeuralNetwork([rays!, 6, 4]!);
         break;
       default:
@@ -101,13 +105,17 @@ export class Controls {
       this.forward = false;
     }
     if (outputs[1] && !outputs[2]) {
+      this.manualOverride = true;
       this.left = true;
     } else {
+      this.manualOverride = false;
       this.left = false;
     }
     if (outputs[2] && !outputs[1]) {
+      this.manualOverride = true;
       this.right = true;
     } else {
+      this.manualOverride = false;
       this.right = false;
     }
     if (outputs[3] && !outputs[0]) {

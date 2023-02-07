@@ -17,7 +17,7 @@ describe("Roads", () => {
     const road270 = new StraightRoad(plane, start270, 300, 3);
 
     it("should detect car in bounds", () => {
-      const carInBounds = new Car(plane, 0, 0, 5);
+      const carInBounds = new Car(plane, 0, 0, 5, 0);
 
       expect(road0.containsCar(carInBounds)).toBeTruthy();
       expect(road90.containsCar(carInBounds)).toBeTruthy();
@@ -26,7 +26,7 @@ describe("Roads", () => {
     });
 
     it("should not detect car out of bounds", () => {
-      const carOutOfBounds = new Car(plane, 600, 600, 5);
+      const carOutOfBounds = new Car(plane, 600, 600, 5, 0);
 
       expect(road0.containsCar(carOutOfBounds)).toBeFalsy();
       expect(road90.containsCar(carOutOfBounds)).toBeFalsy();
@@ -35,7 +35,7 @@ describe("Roads", () => {
     });
 
     it("should detect collision", () => {
-      const damagedCar = new Car(plane, -130, -105, 5);
+      const damagedCar = new Car(plane, -130, -105, 5, 0);
 
       expect(road0.detectCollision(damagedCar)).toBeTruthy();
       expect(road90.detectCollision(damagedCar)).toBeTruthy();
@@ -44,7 +44,7 @@ describe("Roads", () => {
     });
 
     it("should not detect collision", () => {
-      const safeCar = new Car(plane, 0, 0, 5);
+      const safeCar = new Car(plane, 0, 0, 5, 0);
       expect(road0.detectCollision(safeCar)).toBeFalsy();
       expect(road90.detectCollision(safeCar)).toBeFalsy();
       expect(road180.detectCollision(safeCar)).toBeFalsy();
@@ -102,7 +102,7 @@ describe("Roads", () => {
       });
 
       it("should detect car in bounds", () => {
-        const carInBounds = new Car(plane, 0, 0, 5);
+        const carInBounds = new Car(plane, 0, 0, 5, 0);
 
         expect(cwRoad0.containsCar(carInBounds)).toBeTruthy();
         expect(cwRoad90.containsCar(carInBounds)).toBeTruthy();
@@ -111,7 +111,7 @@ describe("Roads", () => {
       });
 
       it("should not detect car out of bounds", () => {
-        const carOutOfBounds = new Car(plane, 600, 600, 5);
+        const carOutOfBounds = new Car(plane, 600, 600, 5, 0);
 
         expect(cwRoad0.containsCar(carOutOfBounds)).toBeFalsy();
         expect(cwRoad90.containsCar(carOutOfBounds)).toBeFalsy();
@@ -158,7 +158,7 @@ describe("Roads", () => {
       });
 
       it("should detect car in bounds", () => {
-        const carInBounds = new Car(plane, 0, 0, 5);
+        const carInBounds = new Car(plane, 0, 0, 5, 0);
 
         expect(ccwRoad0.containsCar(carInBounds)).toBeTruthy();
         expect(ccwRoad90.containsCar(carInBounds)).toBeTruthy();
@@ -167,7 +167,7 @@ describe("Roads", () => {
       });
 
       it("should not detect car out of bounds", () => {
-        const carOutOfBounds = new Car(plane, 600, 600, 5);
+        const carOutOfBounds = new Car(plane, 600, 600, 5, 0);
 
         expect(ccwRoad0.containsCar(carOutOfBounds)).toBeFalsy();
         expect(ccwRoad90.containsCar(carOutOfBounds)).toBeFalsy();
