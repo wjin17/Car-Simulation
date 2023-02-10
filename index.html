@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <title>Self Driving</title>
+  <script defer src="bundle.js"></script></head>
+  <body>
+    <div id="simulation-container" data-mode="manual">
+      <canvas id="carCanvas"></canvas>
+      <div id="buttons">
+        <button id="reset" class="control-button">🆕</button>
+        <button id="save" class="control-button">💾</button>
+        <button id="discard" class="control-button">🗑️</button>
+        <button id="settings" class="control-button">⚙️</button>
+      </div>
+      <canvas id="networkCanvas"></canvas>
+      <div id="modal" class="modal">
+        <div class="modal-content">
+          <div class="modal-title">
+            <h1>Settings</h1>
+            <button id="close-modal-button">&times;</button>
+          </div>
+          <h2>Mode</h2>
+          <div class="select-mode-container">
+            <button id="select-manual" class="setting-button active">
+              Manual
+            </button>
+            <button id="select-lane-assist" class="setting-button">
+              Lane Assist
+            </button>
+            <button id="select-self-driving" class="setting-button">
+              Self Driving
+            </button>
+            <button id="select-full-self-driving" class="setting-button">
+              Full Self Driving
+            </button>
+          </div>
+          <h2>Tracks</h2>
+          <div class="select-track-container">
+            <button id="select-donut" class="track-button active">Donut</button>
+            <button id="select-nascar" class="track-button">Nascar</button>
+            <button id="select-mario-circuit-1" class="track-button">
+              Mario Circuit
+            </button>
+          </div>
+          <div id="training-size-setting">
+            <h2>Training size</h2>
+            <div class="select-track-container">
+              <input
+                id="training-size-input"
+                type="number"
+                value="10"
+                min="0"
+                step="1"
+                onfocus="this.previousValue = this.value"
+                onkeydown="this.previousValue = this.value"
+                oninput="validity.valid || (value = this.previousValue)"
+              />
+              <button id="update-training-size" class="setting-button">
+                Update
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
