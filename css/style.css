@@ -10,24 +10,47 @@ html {
 
 body {
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   height: 100%;
   max-width: 100vw;
 }
 
-#carCanvas {
+#simulation-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+[data-mode="manual"] #carCanvas {
+  background: #14532d;
+  width: 100%;
+  height: calc(100% - 4rem);
+}
+
+[data-mode="manual"] #networkCanvas {
+  display: none;
+}
+
+[data-mode="manual"] #training-size-setting {
+  display: none;
+}
+
+[data-mode="self-driving"] #carCanvas {
   background: #14532d;
   width: 100%;
   height: calc(50% - 2rem);
 }
 
-#networkCanvas {
+[data-mode="self-driving"] #networkCanvas {
   background: black;
   width: 100%;
   height: calc(50% - 2rem);
+}
+
+[data-mode="self-driving"] #training-size-setting {
+  display: block;
 }
 
 #buttons {
@@ -78,8 +101,11 @@ button {
 }
 
 .modal-content {
+  position: absolute;
   background-color: #fefefe;
-  margin: 15% auto;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
   padding: 20px;
   border: 1px solid #888;
   width: 80%;
@@ -121,6 +147,7 @@ button {
   margin-right: 1rem;
 }
 
+button:active,
 .setting-button.active,
 .track-button.active {
   box-shadow: 0px 0px 0px 0px;
@@ -128,8 +155,26 @@ button {
   left: 5px;
 }
 
+input {
+  outline: none;
+  font-size: 16px;
+  letter-spacing: 2px;
+  text-decoration: none;
+  text-transform: uppercase;
+  color: #000;
+  border: 3px solid;
+  padding: 0.25em 0.5em;
+  box-shadow: 1px 1px 0px 0px, 2px 2px 0px 0px, 3px 3px 0px 0px, 4px 4px 0px 0px,
+    5px 5px 0px 0px;
+  position: relative;
+  user-select: none;
+  -webkit-user-select: none;
+  margin-bottom: 1rem;
+  margin-right: 1rem;
+}
+
 @media (min-width: 1024px) {
-  body {
+  #simulation-container {
     flex-direction: row;
   }
 
@@ -137,12 +182,20 @@ button {
     flex-direction: column;
   }
 
-  #carCanvas {
+  [data-mode="manual"] #carCanvas {
+    background: #14532d;
+    width: calc(100% - 4rem);
+    height: 100%;
+  }
+
+  [data-mode="self-driving"] #carCanvas {
+    background: #14532d;
     width: calc(50% - 2rem);
     height: 100%;
   }
 
-  #networkCanvas {
+  [data-mode="self-driving"] #networkCanvas {
+    background: black;
     width: calc(50% - 2rem);
     height: 100%;
   }

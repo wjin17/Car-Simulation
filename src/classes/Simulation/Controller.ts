@@ -1,17 +1,21 @@
 import { Simulation } from "../../@types/simulation";
-import { Controls, CONTROLS } from "../Controls";
+import { getTrack, TRACKS } from "../../tracks";
+import { CONTROLS } from "../Controls";
 import { ManualSimulation } from "./ManualSimulation";
 import { SelfDrivingSimulation } from "./SelfDrivingSimulation";
 
 export class SimulationController {
   mode: CONTROLS = CONTROLS.MANUAL;
-  simulation: Simulation = new ManualSimulation(CONTROLS.MANUAL);
-  numCars = 50;
+  track: TRACKS = TRACKS.MARIO_CIRCUIT_1;
+  simulation: Simulation;
+  numCars = 10;
 
   modeButtons = document.getElementsByClassName("setting-button");
   trackButtons = document.getElementsByClassName("track-button");
 
   constructor() {
+    const defaultTrack = getTrack(this.track);
+    this.simulation = new ManualSimulation(this.mode, defaultTrack);
     this.addListeners();
   }
 
@@ -33,15 +37,25 @@ export class SimulationController {
       this.updateMode();
     };
 
-    // document.getElementById("select-donut")!.onclick = () => {
-    //   this.setDonut();
-    // };
-    // document.getElementById("select-nascar")!.onclick = () => {
-    //   this.setNascar();
-    // };
-    // document.getElementById("select-mario-circuit")!.onclick = () => {
-    //   this.setMarioCircuit();
-    // };
+    document.getElementById("select-donut")!.onclick = () => {
+      this.track = TRACKS.DONUT;
+      this.updateTrack();
+    };
+    document.getElementById("select-nascar")!.onclick = () => {
+      this.track = TRACKS.NASCAR;
+      this.updateTrack();
+    };
+    document.getElementById("select-mario-circuit-1")!.onclick = () => {
+      this.track = TRACKS.MARIO_CIRCUIT_1;
+      this.updateTrack();
+    };
+    document.getElementById("update-training-size")!.onclick = () => {
+      const sizeInput = document.getElementById(
+        "training-size-input"
+      ) as HTMLInputElement;
+      this.numCars = parseInt(sizeInput.value);
+      this.updateMode();
+    };
   }
 
   start() {
@@ -49,49 +63,46 @@ export class SimulationController {
   }
 
   updateMode() {
-    this.simulation = this.getSimulation();
-    this.clearMode();
+    this.setSimulation();
+    this.clearModeSelection();
     this.setButtonActive(this.mode);
     this.start();
   }
 
-  getSimulation() {
+  updateTrack() {
+    this.setSimulation();
+    this.clearTrackSelection();
+    this.setButtonActive(this.track);
+    this.start();
+  }
+
+  setSimulation() {
+    const track = getTrack(this.track);
+    const container = document.getElementById("simulation-container");
     if (this.mode == CONTROLS.MANUAL || this.mode == CONTROLS.LANE_ASSIST) {
-      return new ManualSimulation(this.mode);
+      if (container) container.dataset.mode = "manual";
+      this.simulation = new ManualSimulation(this.mode, track);
     } else {
-      return new SelfDrivingSimulation(this.mode, this.numCars);
+      if (container) container.dataset.mode = "self-driving";
+      this.simulation = new SelfDrivingSimulation(
+        this.mode,
+        this.numCars,
+        track
+      );
     }
   }
 
-  private clearMode() {
+  private clearModeSelection() {
     for (let i = 0; i < this.modeButtons.length; i++) {
       this.modeButtons[i]?.classList.remove("active");
     }
   }
 
-  //   setDonut() {
-  //     this.clearTrack();
-  //     this.setMode("select-donut");
-  //     this.start();
-  //   }
-
-  //   setNascar() {
-  //     this.clearTrack();
-  //     this.setMode("select-nascar");
-  //     this.start();
-  //   }
-
-  //   setMarioCircuit() {
-  //     this.clearTrack();
-  //     this.setMode("select-mario-circuit");
-  //     this.start();
-  //   }
-
-  //   private clearTrack() {
-  //     for (let i = 0; i < this.trackButtons.length; i++) {
-  //       this.trackButtons[i]?.classList.remove("active");
-  //     }
-  //   }
+  private clearTrackSelection() {
+    for (let i = 0; i < this.modeButtons.length; i++) {
+      this.trackButtons[i]?.classList.remove("active");
+    }
+  }
 
   private setButtonActive(button: string) {
     document.getElementById(`select-${button}`)?.classList.add("active");

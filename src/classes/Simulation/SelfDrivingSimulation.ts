@@ -1,6 +1,5 @@
-import { Road } from "../../@types/road";
+import { Road, Track } from "../../@types/road";
 import { Simulation } from "../../@types/simulation";
-import Tracks from "../../tracks";
 import { distance } from "../../utils/distance";
 import { randomIntBetween } from "../../utils/random";
 import { Car } from "../Car";
@@ -28,9 +27,8 @@ export class SelfDrivingSimulation implements Simulation {
 
   plane: CoordPlane;
 
-  constructor(mode: CONTROLS, numCars: number) {
+  constructor(mode: CONTROLS, numCars: number, track: Track) {
     this.simulate = this.simulate.bind(this);
-    this.networkCanvas.style.display = "block";
     this.mode = mode;
     this.plane = new CoordPlane(
       Math.PI / 2,
@@ -40,7 +38,7 @@ export class SelfDrivingSimulation implements Simulation {
     this.numCars = numCars;
     this.cars = this.generateCars(numCars);
     this.bestCar = this.cars[0];
-    this.track = Tracks.Mario.createMarioCircuit1(this.plane, 300, 3);
+    this.track = track.create(this.plane, 300, 3);
     this.traffic = this.generateTraffic(this.track);
 
     window.onresize = () => {
@@ -109,13 +107,6 @@ export class SelfDrivingSimulation implements Simulation {
   reset() {
     const currentBest = this.getBestCar(false);
     if (currentBest.distance > this.bestCar.distance) {
-      console.log(
-        "new best car! ",
-        "gen:",
-        this.generation,
-        "specimen:",
-        currentBest.specimenId
-      );
       this.bestCar = currentBest;
     }
     this.generation++;

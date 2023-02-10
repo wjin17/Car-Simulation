@@ -25,3 +25,7 @@ export type RoadOffset = {
   y: number;
   rotation: number;
 };
+
+export interface Track {
+  create(plane: CoordPlane, width: number, lanes: number): Road[];
+}

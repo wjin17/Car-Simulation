@@ -1,6 +1,5 @@
-import { Road } from "../../@types/road";
+import { Road, Track } from "../../@types/road";
 import { Simulation } from "../../@types/simulation";
-import Tracks from "../../tracks";
 import { distance } from "../../utils/distance";
 import { Car } from "../Car";
 import { CONTROLS } from "../Controls";
@@ -18,12 +17,7 @@ export class ManualSimulation implements Simulation {
 
   plane: CoordPlane;
 
-  constructor(mode: CONTROLS) {
-    const networkCanvas = document.getElementById(
-      "networkCanvas"
-    ) as HTMLCanvasElement;
-
-    networkCanvas.style.display = "none";
+  constructor(mode: CONTROLS, track: Track) {
     this.simulate = this.simulate.bind(this);
     this.mode = mode;
     this.plane = new CoordPlane(
@@ -32,7 +26,7 @@ export class ManualSimulation implements Simulation {
       this.carCanvas.offsetHeight / 2
     );
     this.car = new Car(this.plane, 0, 0, 5, 0, 0, this.mode);
-    this.track = Tracks.Mario.createMarioCircuit1(this.plane, 300, 3);
+    this.track = track.create(this.plane, 300, 3);
 
     window.onresize = () => {
       this.plane.shiftX = this.carCanvas.offsetWidth / 2;
