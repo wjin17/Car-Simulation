@@ -1,4 +1,7 @@
-name: NodeJS with Webpack
+name: Site deploy
+
+permissions:
+  contents: write
 
 on:
   push:
