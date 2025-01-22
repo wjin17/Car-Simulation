@@ -30,7 +30,6 @@ export class Controls {
         this.brain = new NeuralNetwork([rays!, 6, 4]!);
         break;
       case CONTROLS.FULL_SELF_DRIVING:
-        //this.forward = true;
         this.brain = new NeuralNetwork([rays!, 6, 4]!);
         break;
       default:
@@ -95,9 +94,6 @@ export class Controls {
   }
 
   useSelfDriving(readings: number[]) {
-    // const offsets = readings.map((reading) =>
-    //   reading == null ? 0 : 1 - reading
-    // );
     const outputs = NeuralNetwork.feedForward(readings, this.brain!);
     if (outputs[0] && !outputs[3]) {
       this.forward = true;
@@ -123,7 +119,5 @@ export class Controls {
     } else {
       this.reverse = false;
     }
-    //this.forward = true;
-    //this.reverse = false;
   }
 }

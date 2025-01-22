@@ -1,5 +1,5 @@
-import { Car } from "../Car";
-import { CoordPlane } from "../CoordPlane";
+import { Car } from "./Car";
+import { CoordPlane } from "./CoordPlane";
 
 describe("CoordPlane", () => {
   it("should map a point at 0,0 to the center of the viewport", () => {

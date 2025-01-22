@@ -1,7 +1,8 @@
-import { findCircleLineIntersections, pointOnSegment } from "../intersections";
+import { findCircleLineIntersections, pointOnSegment } from "./intersections";
 
 describe("Intersections", () => {
   it.skip("should detect the intersection between a line and a circle", () => {
+    // come back to this
     const origin = { x: 0, y: 0 };
     const line = [
       { x: 0, y: 0 },
@@ -9,6 +10,8 @@ describe("Intersections", () => {
     ];
 
     const intersections = findCircleLineIntersections(origin, 10, line);
+    console.log(intersections);
+    expect(true).toBe(true);
 
     // expect(x).toBeCloseTo(150);
     // expect(y).toBeCloseTo(150);

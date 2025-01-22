@@ -1,7 +1,7 @@
 import { Car } from "../Car";
 import { CoordPlane } from "../CoordPlane";
-import { StraightRoad } from "../Road/StraightRoad";
-import { TurnRoad } from "../Road/TurnRoad";
+import { StraightRoad } from "./StraightRoad";
+import { TurnRoad } from "./TurnRoad";
 
 describe("Roads", () => {
   const plane = new CoordPlane(Math.PI / 2, 900, 900);

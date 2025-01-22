@@ -33,8 +33,6 @@ export class Visualizer {
         width,
         layerHeight,
         i == network.layers.length - 1 ? ["⬆️", "⬅️", "➡️", "⬇️"] : []
-        //["⬆️", "⬅️", "➡️", "⬇️"]
-        //["🠉", "🠈", "🠊", "🠋"]
       );
     }
   }

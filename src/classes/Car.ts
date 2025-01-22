@@ -63,12 +63,9 @@ export class Car {
       this.laneSensor = new LaneSensor(this, plane);
       this.controls = new Controls(controlType, this.roadSensor.rayCount);
     } else {
-      //this.laneSensor = new LaneSensor(this, plane);
       this.controls = new Controls(controlType);
     }
   }
-
-  // distance could be dist += Math.abs(this.speed)
 
   generateCar() {
     const points = [];
