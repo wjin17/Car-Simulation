@@ -1,20 +1,40 @@
 import { findCircleLineIntersections, pointOnSegment } from "./intersections";
 
 describe("Intersections", () => {
-  it.skip("should detect the intersection between a line and a circle", () => {
-    // come back to this
+  it("should detect the intersection between a vertical line and a circle", () => {
     const origin = { x: 0, y: 0 };
     const line = [
       { x: 0, y: 0 },
-      { x: 1, y: 10 },
+      { x: 0, y: 20 },
     ];
 
     const intersections = findCircleLineIntersections(origin, 10, line);
-    console.log(intersections);
-    expect(true).toBe(true);
 
-    // expect(x).toBeCloseTo(150);
-    // expect(y).toBeCloseTo(150);
+    expect(intersections).toStrictEqual([{ x: 0, y: 10 }]);
+  });
+
+  it("should detect the intersection between a horizontal line and a circle", () => {
+    const origin = { x: 0, y: 0 };
+    const line = [
+      { x: 0, y: 0 },
+      { x: 20, y: 0 },
+    ];
+
+    const intersections = findCircleLineIntersections(origin, 10, line);
+
+    expect(intersections).toStrictEqual([{ x: 10, y: 0 }]);
+  });
+
+  it("should detect the intersection between a diagonal line and a circle", () => {
+    const origin = { x: 0, y: 0 };
+    const line = [
+      { x: 0, y: 0 },
+      { x: 6, y: 8 },
+    ];
+
+    const intersections = findCircleLineIntersections(origin, 5, line);
+
+    expect(intersections).toStrictEqual([{ x: 3, y: 4 }]);
   });
 
   it("should determine if a point is on a segment", () => {

@@ -42,39 +42,68 @@ export function findCircleLineIntersections(
   radius: number,
   line: Point[]
 ) {
-  const slope = (line[1].y - line[0].y) / (line[1].x - line[0].x);
-  const yIntercept = line[0].y - slope * line[0].x;
+  const [p1, p2] = line;
+  const dx = p2.x - p1.x;
+  const dy = p2.y - p1.y;
 
-  const A = 1 + Math.pow(slope, 2);
-  if (A == Infinity) return [];
-  const B = 2 * (slope * (yIntercept - origin.y) - origin.x);
-  const C =
-    Math.pow(origin.x, 2) +
-    Math.pow(yIntercept - origin.y, 2) -
-    Math.pow(radius, 2);
+  const circle_x = p1.x - origin.x;
+  const circle_y = p1.y - origin.y;
 
-  const D = Math.pow(B, 2) - 4 * A * C;
+  const A = dx * dx + dy * dy;
+  const B = 2 * (circle_x * dx + circle_y * dy);
+  const C = circle_x * circle_x + circle_y * circle_y - radius * radius;
 
-  if (D == 0) {
-    const intersection = [(-B + Math.sqrt(D)) / (2 * A)];
+  const discriminant = B * B - 4 * A * C;
+  if (discriminant < 0) return [];
 
-    return intersection
-      .map((x) => ({
-        x,
-        y: slope * x + yIntercept,
-      }))
-      .filter((point) => Math.abs(distance(point, origin) - radius) < 0.0001);
-  } else if (D >= 0) {
-    const intersections = [
-      (-B + Math.sqrt(D)) / (2 * A),
-      (-B - Math.sqrt(D)) / (2 * A),
-    ];
+  const t1 = (-B + Math.sqrt(discriminant)) / (2 * A);
+  const t2 = (-B - Math.sqrt(discriminant)) / (2 * A);
 
-    return intersections
-      .map((x) => ({ x, y: slope * x + yIntercept }))
-      .filter((point) => Math.abs(distance(point, origin) - radius) < 0.0001);
+  const intersections: Point[] = [];
+
+  for (const t of [t1, t2]) {
+    if (t >= 0 && t <= 1) {
+      intersections.push({
+        x: p1.x + t * dx + origin.x - origin.x,
+        y: p1.y + t * dy + origin.y - origin.y,
+      });
+    }
   }
-  return [];
+
+  return intersections;
+  // const slope = (p2.y - p1.y) / (p2.x - p1.x);
+  // const yIntercept = p1.y - slope * p1.x;
+
+  // const A = 1 + Math.pow(slope, 2);
+  // if (A == Infinity) return [];
+  // const B = 2 * (slope * (yIntercept - origin.y) - origin.x);
+  // const C =
+  //   Math.pow(origin.x, 2) +
+  //   Math.pow(yIntercept - origin.y, 2) -
+  //   Math.pow(radius, 2);
+
+  // const D = Math.pow(B, 2) - 4 * A * C;
+
+  // if (D == 0) {
+  //   const intersection = [(-B + Math.sqrt(D)) / (2 * A)];
+
+  //   return intersection
+  //     .map((x) => ({
+  //       x,
+  //       y: slope * x + yIntercept,
+  //     }))
+  //     .filter((point) => Math.abs(distance(point, origin) - radius) < 0.0001);
+  // } else if (D >= 0) {
+  //   const intersections = [
+  //     (-B + Math.sqrt(D)) / (2 * A),
+  //     (-B - Math.sqrt(D)) / (2 * A),
+  //   ];
+
+  //   return intersections
+  //     .map((x) => ({ x, y: slope * x + yIntercept }))
+  //     .filter((point) => Math.abs(distance(point, origin) - radius) < 0.0001);
+  // }
+  // return [];
 }
 
 export function pointOnSegment(point: Point, segment: Point[]) {
