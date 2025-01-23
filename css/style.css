@@ -33,7 +33,7 @@ body {
   display: none;
 }
 
-[data-mode="manual"] #training-size-setting {
+[data-mode="manual"] #network-setting {
   display: none;
 }
 
@@ -49,7 +49,7 @@ body {
   height: calc(50% - 2rem);
 }
 
-[data-mode="self-driving"] #training-size-setting {
+[data-mode="self-driving"] #network-setting {
   display: block;
 }
 

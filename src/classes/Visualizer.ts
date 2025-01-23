@@ -1,13 +1,18 @@
 import { getRGBA } from "../utils/getRGBA";
 import { lerp } from "../utils/lerp";
-// import { FFNN, FFNNLayer } from "./Models/FeedForward/NeuralNetwork";
 
 export class Visualizer {
   static drawNetwork(
     context: CanvasRenderingContext2D,
-    network: NeuralNetwork
+    network: NeuralNetwork,
+    id?: string | number
   ) {
-    const margin = 50;
+    context.fillStyle = "#FDFCDC";
+    context.fillRect(0, 0, context.canvas.width, context.canvas.height);
+    context.fillStyle = "black";
+    context.font = "30px Arial";
+    context.fillText("Speciment: " + id, 50, 50);
+    const margin = 100;
     const top = margin;
     const width = context.canvas.width - margin * 2;
     const height = context.canvas.height - margin * 2;
@@ -50,6 +55,7 @@ export class Visualizer {
 
     const { inputs, outputs, weights, biases } = layer;
 
+    // Drawing the weights
     for (let i = 0; i < inputs.length; i++) {
       for (let j = 0; j < outputs.length; j++) {
         context.beginPath();
@@ -61,6 +67,7 @@ export class Visualizer {
       }
     }
 
+    // Drawing the nodes
     const nodeRadius = 18;
     for (let i = 0; i < inputs.length; i++) {
       const x = Visualizer.getNodeX(inputs, i, left, right);
@@ -74,6 +81,7 @@ export class Visualizer {
       context.fill();
     }
 
+    // Drawing the emojis
     for (let i = 0; i < outputs.length; i++) {
       const x = Visualizer.getNodeX(outputs, i, left, right);
       context.beginPath();

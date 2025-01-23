@@ -80,14 +80,18 @@ export class SelfDrivingSimulation implements Simulation {
       currentCar.draw(this.carContext, "red");
     }
 
-    const car = this.getBestCar(true);
+    const car = this.getBestCar(false);
 
     this.plane.updateCenter(car);
 
     this.carContext.globalAlpha = 1;
     car.draw(this.carContext, "red");
     if (car.controls.brain) {
-      Visualizer.drawNetwork(this.networkContext, car.controls.brain);
+      Visualizer.drawNetwork(
+        this.networkContext,
+        car.controls.brain,
+        car.specimenId
+      );
     }
 
     if (this.cars.every((car) => car.collision)) this.reset();
@@ -105,7 +109,7 @@ export class SelfDrivingSimulation implements Simulation {
   }
 
   reset() {
-    const currentBest = this.getBestCar(false);
+    const currentBest = this.getBestCar(true);
     if (currentBest.distance > this.bestCar.distance) {
       this.bestCar = currentBest;
     }
@@ -123,13 +127,13 @@ export class SelfDrivingSimulation implements Simulation {
     let newCars = [];
     for (let i = 0; i < numCars; i++) {
       const newCar = new Car(this.plane, 0, 0, 5, this.specimens, 0, this.mode);
-      if (parent) {
-        newCar.controls.brain?.inherit(parent.controls.brain!);
-      }
       newCars.push(newCar);
       this.specimens++;
     }
-
+    if (parent) {
+      newCars[0].controls.brain?.inherit(parent.controls.brain!);
+      newCars[0].specimenId = parent.specimenId;
+    }
     return newCars;
   }
 
@@ -145,17 +149,17 @@ export class SelfDrivingSimulation implements Simulation {
     return traffic;
   }
 
-  getBestCar(includeCollision: boolean) {
-    return this.cars.reduce((prev, curr) => {
-      const longer = prev.distance < curr.distance;
-      const noCollision = !curr.collision;
-      if (includeCollision) {
-        if (longer && noCollision) return curr;
-        else return prev;
+  getBestCar(includeDead: boolean) {
+    let currentBest = this.cars[0];
+    for (const current of this.cars) {
+      const isFurther = current.distance > currentBest.distance;
+      const alive = !current.collision;
+      if (includeDead) {
+        if (isFurther) currentBest = current;
       } else {
-        if (longer) return curr;
-        else return prev;
+        if (isFurther && alive) currentBest = current;
       }
-    }, this.cars[0]);
+    }
+    return currentBest;
   }
 }
