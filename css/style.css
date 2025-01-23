@@ -33,7 +33,7 @@ body {
   display: none;
 }
 
-[data-mode="manual"] #training-size-setting {
+[data-mode="manual"] #network-settings-modal {
   display: none;
 }
 
@@ -49,7 +49,7 @@ body {
   height: calc(50% - 2rem);
 }
 
-[data-mode="self-driving"] #training-size-setting {
+[data-mode="self-driving"] #network-setting {
   display: block;
 }
 
@@ -155,7 +155,7 @@ button:active,
   left: 5px;
 }
 
-input {
+input, select {
   outline: none;
   font-size: 16px;
   letter-spacing: 2px;
@@ -171,6 +171,19 @@ input {
   -webkit-user-select: none;
   margin-bottom: 1rem;
   margin-right: 1rem;
+}
+
+.network-settings {
+  display: grid;
+  grid-template-rows: auto;
+  grid-template-columns: 1fr 1fr;
+  /* display: flex;
+  flex-direction: row wrap; */
+}
+
+.network-setting {
+  display: flex;
+  flex-direction: column;
 }
 
 @media (min-width: 1024px) {

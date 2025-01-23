@@ -1,4 +1,4 @@
-import { reflectOverX, rotateClockwise, shift } from "../transformations";
+import { reflectOverX, rotateClockwise, shift } from "./transformations";
 
 describe("Transformations", () => {
   it("should shift a point by 150 in x and y", () => {

@@ -37,7 +37,8 @@ export class Car {
     maxSpeed: number,
     specimenId: number,
     angle?: number,
-    controlType?: CONTROLS
+    controlType?: CONTROLS,
+    hiddenLayers?: number[]
   ) {
     this.plane = plane;
     this.x = startX;
@@ -57,18 +58,23 @@ export class Car {
       this.controls = new Controls(controlType);
     } else if (controlType == CONTROLS.SELF_DRIVING) {
       this.roadSensor = new RoadSensor(this, plane);
-      this.controls = new Controls(controlType, this.roadSensor.rayCount);
+      this.controls = new Controls(
+        controlType,
+        this.roadSensor.rayCount,
+        hiddenLayers
+      );
     } else if (controlType == CONTROLS.FULL_SELF_DRIVING) {
       this.roadSensor = new RoadSensor(this, plane);
       this.laneSensor = new LaneSensor(this, plane);
-      this.controls = new Controls(controlType, this.roadSensor.rayCount);
+      this.controls = new Controls(
+        controlType,
+        this.roadSensor.rayCount,
+        hiddenLayers
+      );
     } else {
-      //this.laneSensor = new LaneSensor(this, plane);
       this.controls = new Controls(controlType);
     }
   }
-
-  // distance could be dist += Math.abs(this.speed)
 
   generateCar() {
     const points = [];

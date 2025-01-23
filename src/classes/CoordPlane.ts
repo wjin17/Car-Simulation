@@ -1,10 +1,9 @@
-/**
- * Class representing the coordinate plane for a canvas
- */
-
 import { reflectOverX, rotateClockwise, shift } from "../utils/transformations";
 import { Car } from "./Car";
 
+/**
+ * Class representing the coordinate plane for a canvas
+ */
 export class CoordPlane {
   rotation: number;
   shiftX: number;
@@ -17,13 +16,22 @@ export class CoordPlane {
     this.shiftY = y;
   }
 
-  updateCenter(car: Car) {
-    const x = car.x;
-    const y = car.y;
+  /**
+   * Moves the canvas to the given point
+   * @param point
+   */
+  updateCenter(point: Point) {
+    const x = point.x;
+    const y = point.y;
     this.center = { x, y };
   }
 
-  mapToCanvas(point: Point) {
+  /**
+   * Maps a point to the canvas
+   * @param point
+   * @returns Point
+   */
+  mapToCanvas(point: Point): Point {
     const rotatedPoint = reflectOverX(point);
     return shift(
       rotatedPoint,

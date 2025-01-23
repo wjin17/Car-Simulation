@@ -9,6 +9,8 @@ export class SimulationController {
   track: TRACKS = TRACKS.MARIO_CIRCUIT_1;
   simulation: Simulation;
   numCars = 10;
+  mutationRate = 0.2;
+  hiddenLayers: number[] = [6];
 
   modeButtons = document.getElementsByClassName("setting-button");
   trackButtons = document.getElementsByClassName("track-button");
@@ -54,6 +56,18 @@ export class SimulationController {
         "training-size-input"
       ) as HTMLInputElement;
       this.numCars = parseInt(sizeInput.value);
+
+      const mutationRateInput = document.getElementById(
+        "mutation-rate-input"
+      ) as HTMLInputElement;
+      this.mutationRate = parseFloat(mutationRateInput.value);
+
+      const hiddenLayersInput = document.getElementById(
+        "hidden-layers-input"
+      ) as HTMLInputElement;
+      this.hiddenLayers = hiddenLayersInput.value
+        .split(",")
+        .map((val) => parseInt(val));
       this.updateMode();
     };
   }
@@ -84,11 +98,13 @@ export class SimulationController {
       this.simulation = new ManualSimulation(this.mode, track);
     } else {
       if (container) container.dataset.mode = "self-driving";
-      this.simulation = new SelfDrivingSimulation(
-        this.mode,
-        this.numCars,
-        track
-      );
+      this.simulation = new SelfDrivingSimulation(this.mode, track, {
+        networkType: "FeedForward",
+        generationSize: this.numCars,
+        mutationRate: this.mutationRate,
+        activationFunction: "sigmoid",
+        hiddenLayers: this.hiddenLayers,
+      });
     }
   }
 

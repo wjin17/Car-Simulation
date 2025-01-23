@@ -5,7 +5,7 @@ import { randomIntBetween } from "../../utils/random";
 import { Car } from "../Car";
 import { CONTROLS } from "../Controls";
 import { CoordPlane } from "../CoordPlane";
-import { NeuralNetwork } from "../Models/NeuralNetwork";
+// import { FFNN } from "../Models/FeedForward/NeuralNetwork";
 import { StraightRoad } from "../Road/StraightRoad";
 import { Visualizer } from "../Visualizer";
 
@@ -16,18 +16,18 @@ export class SelfDrivingSimulation implements Simulation {
   networkContext = this.networkCanvas.getContext("2d")!;
 
   mode: CONTROLS;
-  numCars: number;
   cars: Car[];
   bestCar: Car;
   specimens = 0;
   generation = 0;
+  networkParams: FFNetworkParams;
 
   track: Road[] = [];
   traffic: Car[] = [];
 
   plane: CoordPlane;
 
-  constructor(mode: CONTROLS, numCars: number, track: Track) {
+  constructor(mode: CONTROLS, track: Track, networkParams: FFNetworkParams) {
     this.simulate = this.simulate.bind(this);
     this.mode = mode;
     this.plane = new CoordPlane(
@@ -35,8 +35,8 @@ export class SelfDrivingSimulation implements Simulation {
       this.carCanvas.offsetWidth / 2,
       this.carCanvas.offsetHeight / 2
     );
-    this.numCars = numCars;
-    this.cars = this.generateCars(numCars);
+    this.networkParams = networkParams;
+    this.cars = this.generateCars(networkParams.generationSize);
     this.bestCar = this.cars[0];
     this.track = track.create(this.plane, 300, 3);
     this.traffic = this.generateTraffic(this.track);
@@ -80,14 +80,18 @@ export class SelfDrivingSimulation implements Simulation {
       currentCar.draw(this.carContext, "red");
     }
 
-    const car = this.getBestCar(true);
+    const car = this.getBestCar(false);
 
     this.plane.updateCenter(car);
 
     this.carContext.globalAlpha = 1;
     car.draw(this.carContext, "red");
     if (car.controls.brain) {
-      Visualizer.drawNetwork(this.networkContext, car.controls.brain);
+      Visualizer.drawNetwork(
+        this.networkContext,
+        car.controls.brain,
+        car.specimenId
+      );
     }
 
     if (this.cars.every((car) => car.collision)) this.reset();
@@ -105,28 +109,41 @@ export class SelfDrivingSimulation implements Simulation {
   }
 
   reset() {
-    const currentBest = this.getBestCar(false);
+    const currentBest = this.getBestCar(true);
     if (currentBest.distance > this.bestCar.distance) {
       this.bestCar = currentBest;
     }
     this.generation++;
     this.traffic = this.generateTraffic(this.track);
-    this.cars = this.generateCars(this.numCars);
-    this.cars[0].controls.brain = this.bestCar.controls.brain;
+    this.cars = this.generateCars(
+      this.networkParams.generationSize,
+      this.bestCar
+    );
     for (let i = 0; i < this.cars.length; i++) {
       if (i != 0) {
-        NeuralNetwork.mutate(this.cars[i].controls.brain!, 0.2);
+        this.cars[i].controls.brain?.mutate(this.networkParams.mutationRate);
       }
     }
   }
 
-  private generateCars(numCars: number) {
+  private generateCars(numCars: number, parent?: Car) {
     let newCars = [];
     for (let i = 0; i < numCars; i++) {
-      newCars.push(new Car(this.plane, 0, 0, 5, this.specimens, 0, this.mode));
+      const newCar = new Car(
+        this.plane,
+        0,
+        0,
+        5,
+        this.specimens,
+        0,
+        this.mode,
+        this.networkParams.hiddenLayers
+      );
+      if (parent) newCar.controls.brain?.inherit(parent.controls.brain!);
+      newCars.push(newCar);
       this.specimens++;
     }
-
+    if (parent) newCars[0].specimenId = parent.specimenId;
     return newCars;
   }
 
@@ -134,25 +151,25 @@ export class SelfDrivingSimulation implements Simulation {
     const traffic: Car[] = [];
     roads.forEach((road, index) => {
       if (road instanceof StraightRoad && index != 0) {
-        const lane = randomIntBetween(1, 3);
-        const { x, y, rotation } = road.getLaneCenter((index % 2) + 1);
+        // const lane = randomIntBetween(1, 4);
+        const { x, y, rotation } = road.getLaneCenter((index % 3) + 1);
         traffic.push(new Car(this.plane, x, y, 3, 0, rotation, CONTROLS.DUMMY));
       }
     });
     return traffic;
   }
 
-  getBestCar(includeCollision: boolean) {
-    return this.cars.reduce((prev, curr) => {
-      const longer = prev.distance < curr.distance;
-      const noCollision = !curr.collision;
-      if (includeCollision) {
-        if (longer && noCollision) return curr;
-        else return prev;
+  getBestCar(includeDead: boolean) {
+    let currentBest = this.cars[0];
+    for (const current of this.cars) {
+      const isFurther = current.distance > currentBest.distance;
+      const alive = !current.collision;
+      if (includeDead) {
+        if (isFurther) currentBest = current;
       } else {
-        if (longer) return curr;
-        else return prev;
+        if (isFurther && alive) currentBest = current;
       }
-    }, this.cars[0]);
+    }
+    return currentBest;
   }
 }

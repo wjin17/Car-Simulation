@@ -46,23 +46,60 @@
               Mario Circuit
             </button>
           </div>
-          <div id="training-size-setting">
-            <h2>Training size</h2>
-            <div class="select-track-container">
-              <input
-                id="training-size-input"
-                type="number"
-                value="10"
-                min="0"
-                step="1"
-                onfocus="this.previousValue = this.value"
-                onkeydown="this.previousValue = this.value"
-                oninput="validity.valid || (value = this.previousValue)"
-              />
-              <button id="update-training-size" class="setting-button">
-                Update
-              </button>
+          <div id="network-settings-modal">
+            <h2>Network settings</h2>
+            <div class="network-settings">
+              <div class="network-setting">
+                <label for="training-size-input">Training size</label>
+                <input
+                  id="training-size-input"
+                  type="number"
+                  value="10"
+                  min="0"
+                  step="1"
+                  onfocus="this.previousValue = this.value"
+                  onkeydown="this.previousValue = this.value"
+                  oninput="validity.valid || (value = this.previousValue)"
+                />
+              </div>
+              <div class="network-setting">
+                <label for="mutation-rate-input">Mutation rate</label>
+                <input
+                  id="mutation-rate-input"
+                  type="number"
+                  value="0.2"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  onfocus="this.previousValue = this.value"
+                  onkeydown="this.previousValue = this.value"
+                  oninput="validity.valid || (value = this.previousValue)"
+                />
+              </div>
+              <div class="network-setting">
+                <label for="hidden-layers-input">Hidden layers</label>
+                <input
+                  id="hidden-layers-input"
+                  type="text"
+                  value="6"
+                  onfocus="this.previousValue = this.value"
+                  onkeydown="this.previousValue = this.value"
+                  oninput="validity.valid || (value = this.previousValue)"
+                />
+              </div>
+              <div class="network-setting">
+                <label for="activation-function-input"
+                  >Activation function</label
+                >
+                <select id="activation-function-input" value="step">
+                  <option value="step">Step</option>
+                  <option value="sigmoid">Sigmoid</option>
+                </select>
+              </div>
             </div>
+            <button id="update-training-size" class="setting-button">
+              Update
+            </button>
           </div>
         </div>
       </div>
