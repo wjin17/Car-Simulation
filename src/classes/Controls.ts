@@ -18,7 +18,7 @@ export class Controls {
 
   brain: FFNN | undefined = undefined;
 
-  constructor(type?: CONTROLS, rays?: number) {
+  constructor(type?: CONTROLS, rays?: number, hiddenLayers: number[] = [6]) {
     switch (type) {
       case CONTROLS.DUMMY:
         this.forward = true;
@@ -27,10 +27,10 @@ export class Controls {
         this.manualControls();
         break;
       case CONTROLS.SELF_DRIVING:
-        this.brain = new FFNN([rays!, 6, 4]!);
+        this.brain = new FFNN([rays!, ...hiddenLayers!, 4]!);
         break;
       case CONTROLS.FULL_SELF_DRIVING:
-        this.brain = new FFNN([rays!, 6, 4]!);
+        this.brain = new FFNN([rays!, ...hiddenLayers!, 4]!);
         break;
       default:
         this.manualControls();

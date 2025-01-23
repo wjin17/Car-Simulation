@@ -16,18 +16,18 @@ export class SelfDrivingSimulation implements Simulation {
   networkContext = this.networkCanvas.getContext("2d")!;
 
   mode: CONTROLS;
-  numCars: number;
   cars: Car[];
   bestCar: Car;
   specimens = 0;
   generation = 0;
+  networkParams: FFNetworkParams;
 
   track: Road[] = [];
   traffic: Car[] = [];
 
   plane: CoordPlane;
 
-  constructor(mode: CONTROLS, numCars: number, track: Track) {
+  constructor(mode: CONTROLS, track: Track, networkParams: FFNetworkParams) {
     this.simulate = this.simulate.bind(this);
     this.mode = mode;
     this.plane = new CoordPlane(
@@ -35,8 +35,8 @@ export class SelfDrivingSimulation implements Simulation {
       this.carCanvas.offsetWidth / 2,
       this.carCanvas.offsetHeight / 2
     );
-    this.numCars = numCars;
-    this.cars = this.generateCars(numCars);
+    this.networkParams = networkParams;
+    this.cars = this.generateCars(networkParams.generationSize);
     this.bestCar = this.cars[0];
     this.track = track.create(this.plane, 300, 3);
     this.traffic = this.generateTraffic(this.track);
@@ -115,10 +115,13 @@ export class SelfDrivingSimulation implements Simulation {
     }
     this.generation++;
     this.traffic = this.generateTraffic(this.track);
-    this.cars = this.generateCars(this.numCars, this.bestCar);
+    this.cars = this.generateCars(
+      this.networkParams.generationSize,
+      this.bestCar
+    );
     for (let i = 0; i < this.cars.length; i++) {
       if (i != 0) {
-        this.cars[i].controls.brain?.mutate(0.2);
+        this.cars[i].controls.brain?.mutate(this.networkParams.mutationRate);
       }
     }
   }
@@ -126,14 +129,21 @@ export class SelfDrivingSimulation implements Simulation {
   private generateCars(numCars: number, parent?: Car) {
     let newCars = [];
     for (let i = 0; i < numCars; i++) {
-      const newCar = new Car(this.plane, 0, 0, 5, this.specimens, 0, this.mode);
+      const newCar = new Car(
+        this.plane,
+        0,
+        0,
+        5,
+        this.specimens,
+        0,
+        this.mode,
+        this.networkParams.hiddenLayers
+      );
+      if (parent) newCar.controls.brain?.inherit(parent.controls.brain!);
       newCars.push(newCar);
       this.specimens++;
     }
-    if (parent) {
-      newCars[0].controls.brain?.inherit(parent.controls.brain!);
-      newCars[0].specimenId = parent.specimenId;
-    }
+    if (parent) newCars[0].specimenId = parent.specimenId;
     return newCars;
   }
 

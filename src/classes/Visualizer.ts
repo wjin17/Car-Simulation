@@ -61,8 +61,8 @@ export class Visualizer {
         context.beginPath();
         context.moveTo(Visualizer.getNodeX(inputs, i, left, right), bottom);
         context.lineTo(Visualizer.getNodeX(outputs, j, left, right), top);
-        context.lineWidth = 2;
-        context.strokeStyle = getRGBA(weights[i][j]);
+        context.lineWidth = 4;
+        context.strokeStyle = getRGBA(weights[i][j] * outputs[j]);
         context.stroke();
       }
     }

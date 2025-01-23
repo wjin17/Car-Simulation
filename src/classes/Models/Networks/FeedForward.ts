@@ -1,5 +1,6 @@
 import { lerp } from "../../../utils/lerp";
 import { stepFunction } from "../Activations/StepFunction";
+import { sigmoidFunction } from "../Activations/SigmoidFunction";
 
 export class FFNN implements NeuralNetwork {
   layers: Layer[] = [];
@@ -10,7 +11,7 @@ export class FFNN implements NeuralNetwork {
     for (let i = 0; i < neuronCounts.length - 1; i++) {
       this.layers.push(new FFNNLayer(neuronCounts[i], neuronCounts[i + 1]));
     }
-    this.activationFunction = stepFunction;
+    this.activationFunction = sigmoidFunction;
   }
 
   predict(input: number[]) {
@@ -18,7 +19,7 @@ export class FFNN implements NeuralNetwork {
     for (let i = 1; i < this.layers.length; i++) {
       outputs = this.activationFunction(outputs, this.layers[i]);
     }
-    return outputs;
+    return outputs.map((output) => (output > 0.5 ? 1 : 0));
   }
 
   inherit(parent: FFNN) {

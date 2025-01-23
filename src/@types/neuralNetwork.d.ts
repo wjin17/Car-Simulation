@@ -13,3 +13,11 @@ interface NeuralNetwork {
 }
 
 type ActivationFunction = (input: number[], layer: Layer) => number[];
+
+interface FFNetworkParams {
+  networkType: "FeedForward";
+  mutationRate: number;
+  hiddenLayers: number[];
+  generationSize: number;
+  activationFunction: "sigmoid" | "step";
+}
