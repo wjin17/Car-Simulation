@@ -1,6 +1,6 @@
 import { getRGBA } from "../utils/getRGBA";
 import { lerp } from "../utils/lerp";
-import { NeuralNetwork, Layer } from "./Models/NeuralNetwork";
+// import { FFNN, FFNNLayer } from "./Models/FeedForward/NeuralNetwork";
 
 export class Visualizer {
   static drawNetwork(
@@ -8,7 +8,6 @@ export class Visualizer {
     network: NeuralNetwork
   ) {
     const margin = 50;
-    const left = margin;
     const top = margin;
     const width = context.canvas.width - margin * 2;
     const height = context.canvas.height - margin * 2;
@@ -16,7 +15,7 @@ export class Visualizer {
     const layerHeight = height / network.layers.length;
 
     for (let i = network.layers.length - 1; i >= 0; i--) {
-      const layerTop =
+      const layerY =
         top +
         lerp(
           height - layerHeight,
@@ -28,8 +27,8 @@ export class Visualizer {
       Visualizer.drawLevel(
         context,
         network.layers[i],
-        left,
-        layerTop,
+        margin,
+        layerY,
         width,
         layerHeight,
         i == network.layers.length - 1 ? ["⬆️", "⬅️", "➡️", "⬇️"] : []

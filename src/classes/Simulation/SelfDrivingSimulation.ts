@@ -5,7 +5,7 @@ import { randomIntBetween } from "../../utils/random";
 import { Car } from "../Car";
 import { CONTROLS } from "../Controls";
 import { CoordPlane } from "../CoordPlane";
-import { NeuralNetwork } from "../Models/NeuralNetwork";
+// import { FFNN } from "../Models/FeedForward/NeuralNetwork";
 import { StraightRoad } from "../Road/StraightRoad";
 import { Visualizer } from "../Visualizer";
 
@@ -111,19 +111,22 @@ export class SelfDrivingSimulation implements Simulation {
     }
     this.generation++;
     this.traffic = this.generateTraffic(this.track);
-    this.cars = this.generateCars(this.numCars);
-    this.cars[0].controls.brain = this.bestCar.controls.brain;
+    this.cars = this.generateCars(this.numCars, this.bestCar);
     for (let i = 0; i < this.cars.length; i++) {
       if (i != 0) {
-        NeuralNetwork.mutate(this.cars[i].controls.brain!, 0.2);
+        this.cars[i].controls.brain?.mutate(0.2);
       }
     }
   }
 
-  private generateCars(numCars: number) {
+  private generateCars(numCars: number, parent?: Car) {
     let newCars = [];
     for (let i = 0; i < numCars; i++) {
-      newCars.push(new Car(this.plane, 0, 0, 5, this.specimens, 0, this.mode));
+      const newCar = new Car(this.plane, 0, 0, 5, this.specimens, 0, this.mode);
+      if (parent) {
+        newCar.controls.brain?.inherit(parent.controls.brain!);
+      }
+      newCars.push(newCar);
       this.specimens++;
     }
 
@@ -134,8 +137,8 @@ export class SelfDrivingSimulation implements Simulation {
     const traffic: Car[] = [];
     roads.forEach((road, index) => {
       if (road instanceof StraightRoad && index != 0) {
-        const lane = randomIntBetween(1, 3);
-        const { x, y, rotation } = road.getLaneCenter((index % 2) + 1);
+        // const lane = randomIntBetween(1, 4);
+        const { x, y, rotation } = road.getLaneCenter((index % 3) + 1);
         traffic.push(new Car(this.plane, x, y, 3, 0, rotation, CONTROLS.DUMMY));
       }
     });

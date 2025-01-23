@@ -1,4 +1,4 @@
-import { NeuralNetwork } from "./Models/NeuralNetwork";
+import { FFNN } from "./Models/Networks/FeedForward";
 
 export const enum CONTROLS {
   MANUAL = "manual",
@@ -16,7 +16,7 @@ export class Controls {
 
   manualOverride = false;
 
-  brain: NeuralNetwork | undefined = undefined;
+  brain: FFNN | undefined = undefined;
 
   constructor(type?: CONTROLS, rays?: number) {
     switch (type) {
@@ -27,10 +27,10 @@ export class Controls {
         this.manualControls();
         break;
       case CONTROLS.SELF_DRIVING:
-        this.brain = new NeuralNetwork([rays!, 6, 4]!);
+        this.brain = new FFNN([rays!, 6, 4]!);
         break;
       case CONTROLS.FULL_SELF_DRIVING:
-        this.brain = new NeuralNetwork([rays!, 6, 4]!);
+        this.brain = new FFNN([rays!, 6, 4]!);
         break;
       default:
         this.manualControls();
@@ -94,7 +94,7 @@ export class Controls {
   }
 
   useSelfDriving(readings: number[]) {
-    const outputs = NeuralNetwork.feedForward(readings, this.brain!);
+    const outputs = this.brain!.predict(readings);
     if (outputs[0] && !outputs[3]) {
       this.forward = true;
     } else {
